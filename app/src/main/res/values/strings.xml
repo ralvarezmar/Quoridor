@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Quoridor</string>
+    <string name="winner">"Partidas ganadas: 0 "</string>
+    <string name="ganadas">"Partidas ganadas: "</string>
+
+
+    <string name="games">"Partidas jugadas:  0 "</string>
+    <string name="jugadas">"Partidas jugadas: "</string>
+
+    <string name="Movimiento">"Movimiento"</string>
+    <string name="Pared">"Pared"</string>
+    <string name="Off">"Move"</string>
+    <string name="niveles">"Niveles"</string>
+    <string name="ayuda">"Ayuda"</string>
+    <string name="empezar">"Empezar partida"</string>
+    <string name="user">"Introduzca nombre de usuario"</string>
+
+    <string-array name="player">
+        <item>Jugador</item>
+        <item>Máquina</item>
+        <item>Servidor</item>
+    </string-array>
+    <string name="type">"Seleccione un tipo de jugador:"</string>
+
+    <string name="easy">Fácil</string>
+    <string name="medium">Medio</string>
+    <string name="hard">Difícil</string>
+
+    <string name="help">"Ayuda quoridor \n"</string>
+    <string name="help2">"Cada jugador debe llevar su peón al otro extremo del tablero. Su oponente puede bloquear cada casilla, obligando al otro a desviarse y demorar así su llegada. Está prohibido encerrar al peón rival. Resulta ganador quien llega primero al otro extremo. En cada turno, el jugador puede optar por mover su peón (que avanza un solo casillero por turno y no puede moverse en diagonal) o colocar una nueva pared. En su primer movimiento puede mover a cualquier casilla disponible de la primera fila. \n \n Puede realizar movimientos o bloquear casilla utilizando el botón debajo del tablero. \n \n Puede cambiar el nivel en el menú o reiniciar partida en caso de bloqueo."</string>
+    <string name="title_activity_configure">Configure</string>
+
+
+</resources>

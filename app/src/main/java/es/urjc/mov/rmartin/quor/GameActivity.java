@@ -10,15 +10,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-
 import es.urjc.mov.rmartin.quor.Game.Dijkstra;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
@@ -36,6 +33,8 @@ public class GameActivity extends AppCompatActivity {
     static final int COLUMNAS = 7;
     static final int PORCENTAJE = 20;
     static final double SIZE=1.5;
+    static final int destinyPlayer1=FILAS-1;
+    static final int destinyPlayer2=0;
     Logic logic;
     Player ia;
     Player human;
@@ -83,25 +82,23 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private boolean canWall(Box player,Box cpu){
-        Dijkstra caminoPlayer = new Dijkstra(logic.board,player);
-        ArrayList wayPlayer = caminoPlayer.doWay(0);
-        Dijkstra caminoPc = new Dijkstra(logic.board,cpu);
-        ArrayList wayPc = caminoPc.doWay(logic.board.game.length-1);
-        if(wayPlayer.size()==0 || wayPc.size()==0){
+    private boolean canWall(Box player1,Box player2){
+        Dijkstra play1 = new Dijkstra(logic.board,player1);
+        ArrayList wayPlayer1 = play1.doWay(0);
+        Dijkstra play2 = new Dijkstra(logic.board,player2);
+        ArrayList wayPlayer2 = play2.doWay(logic.board.game.length-1);
+        if(wayPlayer1.size()==0 || wayPlayer2.size()==0){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado, no se puede poner muro",Toast.LENGTH_SHORT);
             msg.show();
-            /*restart();
-            paintAgain();*/
             return false;
         }
         return true;
     }
-    private boolean action(Box player, Box pressed){
+    private boolean action(Box player, Box pressed,int destiny){
         Switch butMov=(Switch) findViewById(R.id.eleccion);
         Log.v(TAG, "accion");
-         if(butMov.isChecked() && human.isFreeBox(pressed)){//Movimiento
-            if(pressed.getId()>=0 && pressed.getId()<FILAS && !human.isFreeBox(pressed)){
+        if(butMov.isChecked() && human.isFreeBox(pressed)){//Movimiento
+            if(pressed.getX()==destinyPlayer2 && !human.isFreeBox(pressed)){
                 restart();
                 paintAgain();
                 ganadas++;
@@ -133,13 +130,11 @@ public class GameActivity extends AppCompatActivity {
         return false;
     }
 
-    private void getMove(Box cpu){
-        Box nextBox=ia.getMove();
+    private void getMove(Box cpu,int destiny){
+        Box nextBox=ia.getMove(destiny);
         if(nextBox==null){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado",Toast.LENGTH_SHORT);
             msg.show();
-            //restart();
-            //paintAgain();
             return;
         }
         if(cpu!=null){
@@ -149,31 +144,31 @@ public class GameActivity extends AppCompatActivity {
         }
         ImageButton img=(ImageButton) findViewById(nextBox.getId());
         img.setBackgroundResource(R.drawable.pawn_computer_back);
-        if((nextBox.getId()>=(FILAS*COLUMNAS)-FILAS)){
+        int posicion=nextBox.getX();
+        if(posicion==destiny){
             restart();
             paintAgain();
         }
     }
 
-    private void getWall(){
-        Box nextBox=ia.putWall();
+    private void getWall(int destiny){
+        Box nextBox=ia.putWall(destiny);
         if(nextBox==null){
-            pcMoves();
+            pcMoves(destinyPlayer1);
             return;
         }
         ImageButton img=(ImageButton) findViewById(nextBox.getId());
         img.setImageResource(R.drawable.square_red);
     }
 
-    private void pcMoves(){
+    private void pcMoves(int destiny){
         int move = (int) (Math.random() * 100);
         Box cpu= logic.board.getCpu();
-        Box nextBox;
         if (move > PORCENTAJE){ //MOVIMIENTO
-            getMove(cpu);
+            getMove(cpu,destiny);
             return;
         } //PARED
-        getWall();
+        getWall(destinyPlayer2);
     }
 
     public class GameBoton implements View.OnClickListener{
@@ -186,9 +181,9 @@ public class GameActivity extends AppCompatActivity {
         public void onClick(View button){
             Box player = logic.board.getPlayer(Box.Status.PLAYER);
             Box pressed = logic.board.getPress(x,y);
-            boolean moveOk=action(player,pressed);
+            boolean moveOk=action(player,pressed,destinyPlayer2);
             if(moveOk){
-                pcMoves();
+                pcMoves(destinyPlayer1);
             }
             Log.v(TAG,"boton game");
         }
@@ -246,13 +241,6 @@ public class GameActivity extends AppCompatActivity {
         b.setStatus(boxes[num]);
         imgButton.setImageResource(images[num]);
         imgButton.setBackgroundResource(backs[num]);
-       /* if(num==2){
-            ImageView imgPlayer=(ImageView) findViewById(R.id.pawn_player);
-            imgPlayer.setVisibility(View.INVISIBLE);
-        }else if(num==3){
-            ImageView imgCpu=(ImageView) findViewById(R.id.pawn_computer);
-            imgCpu.setVisibility(View.INVISIBLE);
-        }*/
     }
 
     private void doBoard(ArrayList<Integer> statusArray){

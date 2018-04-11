@@ -39,7 +39,7 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public Box getMove(){
+    public Box getMove(int destiny){
         Box cpu=b.getCpu();
         Box move;
         int casillaY;
@@ -51,7 +51,7 @@ public class IADijkstra extends Player {
             }while(move.getStatus()!=Box.Status.FREE);
         }else{
             Dijkstra dijkstra=new Dijkstra(b,cpu);
-            ArrayList<Box> way = dijkstra.doWay(board.game.length-1);
+            ArrayList<Box> way = dijkstra.doWay(destiny);
             if(way.size()==0){
                 move=getRandom(cpu);
                 return move;
@@ -67,13 +67,13 @@ public class IADijkstra extends Player {
 
 
     @Override
-    public Box putWall(){
+    public Box putWall(int destiny){ //int destiny
         Box wall;
         Random rand = new Random();
         int casillaX;
         int casillaY;
         Box player = b.getPlayer(Box.Status.PLAYER);
-        do{
+        /*do{
             if (player==null){
                 casillaY = (int) (Math.random() * b.game[0].length);
                 wall=b.getPress((int) (b.game[0].length-1),casillaY);
@@ -89,10 +89,13 @@ public class IADijkstra extends Player {
                     }
                 }
             }
-        }while(!boxOk(wall));
-        wall.setStatus(Box.Status.WALL);
+        }while(!boxOk(wall));*/
         Dijkstra dijkstra1=new Dijkstra(b,player);
-        ArrayList way = dijkstra1.doWay(0);
+        ArrayList<Box> way = dijkstra1.doWay(destiny);
+        wall= way.get(way.size()-1);
+        wall.setStatus(Box.Status.WALL);
+        way = dijkstra1.doWay(destiny);
+        //wall= way.get(way.size()-1);
         if(way.size()==0) {
             wall.setStatus(Box.Status.FREE);
             wall=null;

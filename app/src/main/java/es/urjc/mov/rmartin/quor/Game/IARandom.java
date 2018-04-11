@@ -13,7 +13,7 @@ public class IARandom extends Player {
     }
 
     @Override
-    public Box getMove(){
+    public Box getMove(int destiny){
         Box cpu=board.getCpu();
         Box move;
         int casillaY;
@@ -35,7 +35,7 @@ public class IARandom extends Player {
 
 
     @Override
-    public Box putWall(){
+    public Box putWall(int destiny){
         Box wall;
         int casillaX;
         int casillaY;

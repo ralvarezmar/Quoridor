@@ -2,7 +2,7 @@ package es.urjc.mov.rmartin.quor.Graphic;
 
 public class Box {
 
-    public enum Status{FREE,WALL,PLAYER,CPU,PLAYER1,PLAYER2}
+    public enum Status{FREE,WALL,PLAYER,CPU,REMOTE,PLAYER1,PLAYER2}
     private int x;
     private int y;
     private int id;

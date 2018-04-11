@@ -44,7 +44,7 @@
 
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/peones"
+        android:id="@+id/topBoard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -59,6 +59,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/bottomBoard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"

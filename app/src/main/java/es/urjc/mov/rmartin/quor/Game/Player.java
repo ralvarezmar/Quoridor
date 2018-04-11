@@ -23,6 +23,7 @@ public abstract class Player {
         return (b!= null && pressed.getStatus()==Box.Status.FREE && aroundBoxes.contains(pressed));
     }
 
+
     public abstract Box getMove(int destiny);
 
     public abstract Box putWall(int destiny);

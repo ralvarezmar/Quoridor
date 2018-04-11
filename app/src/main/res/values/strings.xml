@@ -28,7 +28,5 @@
 
     <string name="help">"Ayuda quoridor \n"</string>
     <string name="help2">"Cada jugador debe llevar su peón al otro extremo del tablero. Su oponente puede bloquear cada casilla, obligando al otro a desviarse y demorar así su llegada. Está prohibido encerrar al peón rival. Resulta ganador quien llega primero al otro extremo. En cada turno, el jugador puede optar por mover su peón (que avanza un solo casillero por turno y no puede moverse en diagonal) o colocar una nueva pared. En su primer movimiento puede mover a cualquier casilla disponible de la primera fila. \n \n Puede realizar movimientos o bloquear casilla utilizando el botón debajo del tablero. \n \n Puede cambiar el nivel en el menú o reiniciar partida en caso de bloqueo."</string>
-    <string name="title_activity_configure">Configure</string>
-
 
 </resources>

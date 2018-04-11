@@ -1,15 +1,18 @@
 package es.urjc.mov.rmartin.quor;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -25,6 +28,8 @@ import es.urjc.mov.rmartin.quor.Game.Player;
 import es.urjc.mov.rmartin.quor.Game.IAMedium;
 import es.urjc.mov.rmartin.quor.Game.IARandom;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+
+import static es.urjc.mov.rmartin.quor.Graphic.Box.Status.PLAYER;
 
 
 public class GameActivity extends AppCompatActivity {
@@ -179,7 +184,7 @@ public class GameActivity extends AppCompatActivity {
             this.y= y;
         }
         public void onClick(View button){
-            Box player = logic.board.getPlayer(Box.Status.PLAYER);
+            Box player = logic.board.getPlayer(PLAYER);
             Box pressed = logic.board.getPress(x,y);
             boolean moveOk=action(player,pressed,destinyPlayer2);
             if(moveOk){
@@ -198,7 +203,7 @@ public class GameActivity extends AppCompatActivity {
     private Box.Status[] setBoxes(Box.Status[] boxes){
         boxes[0]= Box.Status.FREE;
         boxes[1]=Box.Status.WALL;
-        boxes[2]=Box.Status.PLAYER;
+        boxes[2]= PLAYER;
         boxes[3]=Box.Status.CPU;
         return boxes;
     }
@@ -286,7 +291,8 @@ public class GameActivity extends AppCompatActivity {
         s= s+ganadas;
         text.setText(s);
     }
-
+    
+/*
     private void typeOfPlayer(int type,Player player){
         switch (type){
             case 0:
@@ -294,12 +300,13 @@ public class GameActivity extends AppCompatActivity {
                 break;
             case 1:
                 player=new IADijkstra(logic.board);
-                break;/*
+                break;
             case 2:
                 player=new Remote(logic.board)
-                break;*/
+                break;
         }
-    }
+    }*/
+
     private void setConfiguration(Bundle configuration){
         player1= configuration.getInt("player1")+2;
         player2= configuration.getInt("player2")+2;
@@ -307,6 +314,40 @@ public class GameActivity extends AppCompatActivity {
         Log.v("RECUPERANDO: ", player1 + " " + player2 + " " + user);
     }
 
+    private void setPlayer(int player1,int player2){
+        switch (Box.Status.values()[player1]){
+            case PLAYER:
+                LinearLayout ll = (LinearLayout) findViewById(R.id.topBoard);
+                ll.setGravity(Gravity.CENTER);
+                TextView pared = new TextView(this);
+                ll.addView(pared);
+                Switch selected = new Switch(this);
+                selected.setChecked(true);
+                break;
+            case CPU:
+
+                break;
+            case REMOTE:
+
+                break;
+        }
+        switch (Box.Status.values()[player2]){
+            case PLAYER:
+                LinearLayout ll = (LinearLayout) findViewById(R.id.bottomBoard);
+                ll.setGravity(Gravity.CENTER);
+                TextView pared = new TextView(this);
+                ll.addView(pared);
+                Switch selected = new Switch(this);
+                selected.setChecked(true);
+                break;
+            case CPU:
+
+                break;
+            case REMOTE:
+
+                break;
+        }
+    }
     //syncronize para pedir jugadas
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -315,11 +356,11 @@ public class GameActivity extends AppCompatActivity {
         Bundle configuration = getIntent().getExtras();
         if(configuration!=null){
             setConfiguration(configuration);
+            setPlayer(player1,player2);
         }
         logic = new Logic(FILAS,COLUMNAS,player1,player2);
         human = new Human(logic.board);
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-
         if(savedInstanceState!=null){
             recuperateStatus(savedInstanceState);
             return;
@@ -327,6 +368,13 @@ public class GameActivity extends AppCompatActivity {
         selectLevel();
         design(statusArray);
         Log.v(TAG, "On create");
+        /*
+        new Thread(new Runnable() {
+            public void run() {
+
+
+            }
+        }).start();*/
     }
 
     @Override
@@ -411,7 +459,6 @@ public class GameActivity extends AppCompatActivity {
 
     private void ayuda(){
         Intent help = new Intent(GameActivity.this,HelpActivity.class);
-        //Bundle msg = new Bundle();
         startActivity(help);
     }
 }

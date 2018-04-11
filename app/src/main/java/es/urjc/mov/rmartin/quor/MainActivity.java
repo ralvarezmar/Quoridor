@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     public class Help implements View.OnClickListener{
         public void onClick(View button){
             Intent help = new Intent(MainActivity.this,HelpActivity.class);
-            //Bundle msg = new Bundle();
             startActivity(help);
         }
     }

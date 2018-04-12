@@ -49,6 +49,43 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/textWallTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                android:fontFamily="casual"
+                android:visibility="invisible"
+                android:textStyle="bold"
+                android:text="@string/Pared"/>
+            <Switch
+                android:id="@+id/eleccionTop"
+                android:visibility="invisible"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:checked="true"
+                android:theme="@style/Switch"
+                android:thumbTint="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/textMoveTop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:fontFamily="casual"
+                android:visibility="invisible"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="@string/Movimiento" />
+
+        </LinearLayout>
 
         <TableLayout
             android:id="@+id/tabla"
@@ -66,17 +103,19 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textWallBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="20sp"
             android:fontFamily="casual"
+            android:visibility="invisible"
             android:textStyle="bold"
             android:text="@string/Pared"/>
 
         <Switch
-            android:id="@+id/eleccion"
+            android:id="@+id/eleccionbottom"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -85,11 +124,12 @@
             android:thumbTint="@color/colorPrimary" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textMoveBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:fontFamily="casual"
+            android:visibility="invisible"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
             android:text="@string/Movimiento" />

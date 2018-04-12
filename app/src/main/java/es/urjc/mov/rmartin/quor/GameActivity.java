@@ -18,6 +18,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import es.urjc.mov.rmartin.quor.Game.Dijkstra;
 import es.urjc.mov.rmartin.quor.Game.Human;
@@ -100,7 +103,7 @@ public class GameActivity extends AppCompatActivity {
         return true;
     }
     private boolean action(Box player, Box pressed,int destiny){
-        Switch butMov=(Switch) findViewById(R.id.eleccion);
+        Switch butMov=(Switch) findViewById(R.id.eleccionbottom);
         Log.v(TAG, "accion");
         if(butMov.isChecked() && human.isFreeBox(pressed)){//Movimiento
             if(pressed.getX()==destinyPlayer2 && !human.isFreeBox(pressed)){
@@ -291,7 +294,7 @@ public class GameActivity extends AppCompatActivity {
         s= s+ganadas;
         text.setText(s);
     }
-    
+
 /*
     private void typeOfPlayer(int type,Player player){
         switch (type){
@@ -317,12 +320,12 @@ public class GameActivity extends AppCompatActivity {
     private void setPlayer(int player1,int player2){
         switch (Box.Status.values()[player1]){
             case PLAYER:
-                LinearLayout ll = (LinearLayout) findViewById(R.id.topBoard);
-                ll.setGravity(Gravity.CENTER);
-                TextView pared = new TextView(this);
-                ll.addView(pared);
-                Switch selected = new Switch(this);
-                selected.setChecked(true);
+                Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
+                TextView movimiento=(TextView) findViewById(R.id.textMoveTop);
+                TextView wall = (TextView) findViewById(R.id.textWallTop);
+                movimiento.setVisibility(View.VISIBLE);
+                eleccion.setVisibility(View.VISIBLE);
+                wall.setVisibility(View.VISIBLE);
                 break;
             case CPU:
 
@@ -333,12 +336,12 @@ public class GameActivity extends AppCompatActivity {
         }
         switch (Box.Status.values()[player2]){
             case PLAYER:
-                LinearLayout ll = (LinearLayout) findViewById(R.id.bottomBoard);
-                ll.setGravity(Gravity.CENTER);
-                TextView pared = new TextView(this);
-                ll.addView(pared);
-                Switch selected = new Switch(this);
-                selected.setChecked(true);
+                Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
+                TextView movimiento=(TextView) findViewById(R.id.textMoveBottom);
+                TextView wall = (TextView) findViewById(R.id.textWallBottom);
+                movimiento.setVisibility(View.VISIBLE);
+                eleccion.setVisibility(View.VISIBLE);
+                wall.setVisibility(View.VISIBLE);
                 break;
             case CPU:
 
@@ -348,6 +351,7 @@ public class GameActivity extends AppCompatActivity {
                 break;
         }
     }
+
     //syncronize para pedir jugadas
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class Dijkstra {
     private Board board;
@@ -52,7 +53,7 @@ public class Dijkstra {
         }
         for(int i=0;i<b.game.length;i++){
             for(int j=0;j<b.game[i].length;j++){
-                if(b.game[i][j].getStatus()== Box.Status.FREE || (x==i && y==j)){
+                if(b.game[i][j].getStatus()== Status.FREE || (x==i && y==j)){
                     n=new Nodo(null,b.game[i][j],NOVISITADO);
                 }else{
                     n=new Nodo(null,null,INFINITO);
@@ -73,17 +74,17 @@ public class Dijkstra {
             y=pos.getY();
         }
         int pesoViejo=matriz[x][y].lenght;
-        Log.v("visit ",x + " " + y);
-        Log.v("ANTES ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
+        //Log.v("visit ",x + " " + y);
+        //Log.v("ANTES ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
 
         if (pesoViejo != INFINITO && (pesoViejo>peso || pesoViejo==NOVISITADO)) {
-            Log.v("Entra ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
+           // Log.v("Entra ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
             matriz[x][y].prev = posAnt;
             matriz[x][y].lenght = peso;
             matriz[x][y].box = pos;
 //          Log.v("patata", matriz[x][y].toString());
             ArrayList<Box> around = board.aroundBoxes(pos);
-            Log.v("Alrededor: ", around.toString());
+            //Log.v("Alrededor: ", around.toString());
             for (Box posAct : around) {
                 visit(posAct, matriz[x][y], peso + 1,destiny);
                 if (posAct.getX() == destiny) {

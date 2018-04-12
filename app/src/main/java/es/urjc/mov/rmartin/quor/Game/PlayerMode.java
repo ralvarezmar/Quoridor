@@ -5,7 +5,7 @@ package es.urjc.mov.rmartin.quor.Game;
  */
 
 public enum PlayerMode {
-    CPU(1), HUMAN(2), REMOTE(3);
+    HUMAN(0),CPU(1),REMOTE(2);
 
     private int num;
     PlayerMode(int num) {
@@ -13,5 +13,12 @@ public enum PlayerMode {
     }
     public int getNum() {
         return num;
+    }
+
+    public static PlayerMode getValue(int val){
+        if(val>2){
+            return null;
+        }
+        return PlayerMode.values()[val];
     }
 }

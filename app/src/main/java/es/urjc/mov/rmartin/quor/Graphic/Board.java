@@ -5,41 +5,29 @@ import java.util.ArrayList;
 
 public class Board{
     public Box game[][];
-    public Board(int filas, int columnas,int player1, int player2){
+    public Board(int filas, int columnas){
         game=new Box[filas][columnas];
         Box b;
         int id=0;
         for(int i=0;i<filas;i++){
             for(int j=0;j<columnas;j++){
                 if(j==(columnas-1)/2 && i==0){
-                    b=new Box(i,j,id, Box.Status.values()[player1]);
+                    b=new Box(i,j,id, Status.PLAYER1);
                 }else if(j==(columnas-1)/2 && i==filas-1) {
-                    b = new Box(i, j, id, Box.Status.values()[player2]);
+                    b = new Box(i, j, id, Status.PLAYER2);
                 }else{
-                    b = new Box(i, j, id, Box.Status.FREE);
+                    b = new Box(i, j, id, Status.FREE);
                 }
                 game[i][j]=b;
                 id++;
             }
         }
     }
-    public Box getPlayer(Box.Status player){
+    public Box getPlayer(Status player){
         for (int i = 0; i < game.length; i++) {
             for(int j= 0;j <game[i].length;j++){
                 Box b = game[i][j];
                 if (b.getStatus() == player) {
-                    return b;
-                }
-            }
-        }
-        return null;
-    }
-
-    public Box getCpu(){
-        for (int i = 0; i < game.length; i++) {
-            for(int j= 0;j <game[i].length;j++){
-                Box b = game[i][j];
-                if (b.getStatus() == Box.Status.CPU) {
                     return b;
                 }
             }
@@ -71,14 +59,14 @@ public class Board{
         int y = box.getY();
         return (i+x>=0 && i+x<(game[0].length) && (j+y>=0 && j+y<(game[0].length)) &&
                 ((i==-1 && j==0) || (i==1 && j==0) ||(j==1 && i==0)||(j==-1  && i==0)) &&
-                game[i+x][j+y].getStatus() == Box.Status.FREE);
+                game[i+x][j+y].getStatus() == Status.FREE);
     }
 
     public ArrayList<Box> aroundBoxes(Box box){
         ArrayList<Box> boxes = new ArrayList<>();
         if(box==null){
             for(int i=0;i<game.length-1;i++){
-                if(game[game.length-1][i].getStatus()==Box.Status.FREE){
+                if(game[game.length-1][i].getStatus()==Status.FREE){
                     boxes.add(game[game.length-1][i]);
                 }
             }

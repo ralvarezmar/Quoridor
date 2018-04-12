@@ -4,17 +4,17 @@ import java.util.Random;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class IAMedium extends Player {
     Board b;
     public IAMedium(Board b){
-        super(b);
-        this.b=b;}
+        super(b);}
 
     @Override
     public Box getMove(int destiny){
         Random rand = new Random();
-        Box cpu=b.getCpu();
+        Box cpu=b.getPlayer(Status.PLAYER1);
         Box move;
         int casillaX;
         int casillaY;
@@ -25,7 +25,7 @@ public class IAMedium extends Player {
                 move = b.getPress(0, casillaY);
             }else{
                 move = b.getPress(cpu.getX() + 1, cpu.getY());
-                if (move == null || move.getStatus() != Box.Status.FREE) {
+                if (move == null || move.getStatus() != Status.FREE) {
                     casillaX = rand.nextInt(1 + 1 + 1) - 1;
                     if (casillaX != 0) {
                         move = b.getPress(Math.abs(casillaX + cpu.getX()), cpu.getY());
@@ -34,10 +34,10 @@ public class IAMedium extends Player {
                         move = b.getPress(cpu.getX(), Math.abs(casillaY + cpu.getY()));
                     }
                 }
-                cpu.setStatus(Box.Status.FREE);
+                cpu.setStatus(Status.FREE);
             }
         }while (!boxOk(move));
-        move.setStatus(Box.Status.CPU);
+        move.setStatus(Status.PLAYER1);
         return move;
     }
 
@@ -47,7 +47,7 @@ public class IAMedium extends Player {
         Random rand = new Random();
         int casillaX;
         int casillaY;
-        Box player = b.getPlayer(Box.Status.PLAYER);
+        Box player = b.getPlayer(Status.PLAYER2);
 
         do{
             if (player==null){
@@ -55,7 +55,7 @@ public class IAMedium extends Player {
                 wall=b.getPress((int) (b.game[0].length-1),casillaY);
             }else{
                 wall=b.getPress(player.getX()-1,player.getY());
-                if(wall==null || wall.getStatus()!= Box.Status.FREE){
+                if(wall==null || wall.getStatus()!= Status.FREE){
                     casillaX = rand.nextInt(1 + 1 + 1) - 1;
                     if(casillaX!=0){
                         wall = b.getPress(Math.abs(casillaX + player.getX()), player.getY());
@@ -66,12 +66,12 @@ public class IAMedium extends Player {
                 }
             }
         }while(!boxOk(wall));
-        wall.setStatus(Box.Status.WALL);
+        wall.setStatus(Status.WALL);
         return wall;
     }
 
     @Override
-    public boolean isFreeBox(Box pressed) {
+    public boolean isFreeBox(Box pressed,Status player) {
         return false;
     }
 

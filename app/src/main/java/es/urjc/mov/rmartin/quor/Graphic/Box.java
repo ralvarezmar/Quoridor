@@ -2,7 +2,6 @@ package es.urjc.mov.rmartin.quor.Graphic;
 
 public class Box {
 
-    public enum Status{FREE,WALL,PLAYER,CPU,REMOTE,PLAYER1,PLAYER2}
     private int x;
     private int y;
     private int id;
@@ -13,6 +12,24 @@ public class Box {
         this.y=y;
         this.id=id;
         this.status=status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Box box = (Box) o;
+
+        if (x != box.x) return false;
+        return y == box.y;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
     }
 
     @Override

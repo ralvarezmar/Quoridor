@@ -5,6 +5,7 @@ import java.util.Random;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class IARandom extends Player {
 
@@ -14,7 +15,7 @@ public class IARandom extends Player {
 
     @Override
     public Box getMove(int destiny){
-        Box cpu=board.getCpu();
+        Box cpu=board.getPlayer(Status.PLAYER1);
         Box move;
         int casillaY;
         do {
@@ -22,14 +23,14 @@ public class IARandom extends Player {
                 casillaY = (int) (Math.random() * board.game[0].length);
                 move = board.getPress(0, casillaY);
             }else{
-                cpu.setStatus(Box.Status.FREE);
+                cpu.setStatus(Status.FREE);
                 ArrayList<Box> boxes = board.aroundBoxes(cpu);
                 int rnd = new Random().nextInt(boxes.size());
                 move=boxes.get(rnd);
             }
         }
         while (!boxOk(move));
-        move.setStatus(Box.Status.CPU);
+        move.setStatus(Status.PLAYER1);
         return move;
     }
 
@@ -44,12 +45,12 @@ public class IARandom extends Player {
             casillaY = (int) (Math.random() * board.game.length);
             wall=board.getPress(casillaX,casillaY);
         }while(!boxOk(wall));
-        wall.setStatus(Box.Status.WALL);
+        wall.setStatus(Status.WALL);
         return wall;
     }
 
     @Override
-    public boolean isFreeBox(Box pressed) {
+    public boolean isFreeBox(Box pressed,Status player) {
         return false;
     }
 

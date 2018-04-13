@@ -14,7 +14,7 @@ public class IADijkstra extends Player {
     Board b;
     public IADijkstra(Board b){
         super(b);
-        }
+        this.b=b;}
 
 
     private Box getRandom(Box cpu){
@@ -41,7 +41,7 @@ public class IADijkstra extends Player {
 
     @Override
     public Box getMove(int destiny){
-        Box cpu=b.getPlayer(Status.PLAYER1);
+        Box cpu=b.getCpu();
         Box move;
         int casillaY;
         if(cpu==null) { //primer movimiento
@@ -106,7 +106,7 @@ public class IADijkstra extends Player {
 
 
     @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean isFreeBox(Box pressed) {
         return false;
     }
 

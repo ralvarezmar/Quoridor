@@ -15,24 +15,6 @@ public class Box {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Box box = (Box) o;
-
-        if (x != box.x) return false;
-        return y == box.y;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        return result;
-    }
-
-    @Override
     public String toString(){
         return "{x: " + this.x + " y: "+this.y +"}";
     }

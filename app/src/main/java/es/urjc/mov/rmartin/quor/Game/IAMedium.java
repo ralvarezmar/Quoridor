@@ -9,12 +9,13 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class IAMedium extends Player {
     Board b;
     public IAMedium(Board b){
-        super(b);}
+        super(b);
+        this.b=b;}
 
     @Override
     public Box getMove(int destiny){
         Random rand = new Random();
-        Box cpu=b.getPlayer(Status.PLAYER1);
+        Box cpu=b.getCpu();
         Box move;
         int casillaX;
         int casillaY;
@@ -37,7 +38,7 @@ public class IAMedium extends Player {
                 cpu.setStatus(Status.FREE);
             }
         }while (!boxOk(move));
-        move.setStatus(Status.PLAYER1);
+        move.setStatus(Status.PLAYER2);
         return move;
     }
 
@@ -71,7 +72,7 @@ public class IAMedium extends Player {
     }
 
     @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean isFreeBox(Box pressed) {
         return false;
     }
 

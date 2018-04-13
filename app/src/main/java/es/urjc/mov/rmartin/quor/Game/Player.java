@@ -8,6 +8,7 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public abstract class Player {
     Board board;
+
     Player(Board board) {
         this.board=board;
     }
@@ -20,10 +21,7 @@ public abstract class Player {
     boolean isMoveValid(Box pressed, Status player){
         Box b=board.getPlayer(player);
         ArrayList<Box> aroundBoxes= board.aroundBoxes(b);
-        /*return ((pressed.getStatus()==Status.FREE) && ((b.getX()==x-1 && b.getY()==y)
-                || (b.getX()==x+1 && b.getY()==y) ||
-                (b.getY()==y-1 && b.getX()==x) || (b.getY()== y+1  && b.getX()==x))); //LIMPIAR */
-        return (pressed.getStatus()==Status.FREE && aroundBoxes.contains(pressed));
+        return (b!= null && pressed.getStatus()==Status.FREE && aroundBoxes.contains(pressed));
     }
 
 
@@ -31,6 +29,6 @@ public abstract class Player {
 
     public abstract Box putWall(int destiny);
 
-    public abstract boolean isFreeBox(Box pressed,Status player);
+    public abstract boolean isFreeBox(Box pressed);
     public abstract boolean putWall(Box pressed);
 }

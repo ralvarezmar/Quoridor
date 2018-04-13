@@ -15,7 +15,7 @@ public class IARandom extends Player {
 
     @Override
     public Box getMove(int destiny){
-        Box cpu=board.getPlayer(Status.PLAYER1);
+        Box cpu=board.getCpu();
         Box move;
         int casillaY;
         do {
@@ -50,7 +50,7 @@ public class IARandom extends Player {
     }
 
     @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean isFreeBox(Box pressed) {
         return false;
     }
 

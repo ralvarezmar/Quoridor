@@ -1,13 +1,9 @@
 package es.urjc.mov.rmartin.quor.Graphic;
 
 /**
- * Created by rmartin on 12/04/18.
+ * Created by ruben on 13/04/18.
  */
 
 public enum Status {
-    FREE(0),WALL(1),PLAYER2(2),PLAYER1(3);
-    int num;
-    Status(int num){
-        this.num=num;
-    }
+    FREE,WALL,PLAYER1,PLAYER2
 }

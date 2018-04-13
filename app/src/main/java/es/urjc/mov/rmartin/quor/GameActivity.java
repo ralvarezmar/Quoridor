@@ -28,7 +28,6 @@ import es.urjc.mov.rmartin.quor.Game.PlayerMode;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
-
 public class GameActivity extends AppCompatActivity {
     private static String TAG="PRUEBA";
     static final int FILAS = 7;
@@ -38,12 +37,12 @@ public class GameActivity extends AppCompatActivity {
     static final int destinyPlayer1=FILAS-1;
     static final int destinyPlayer2=0;
     Logic logic;
+    Player playerTop;
+    Player playerBottom;
     int jugadas=0;
     int ganadas=0;
-    int p1;
-    int p2;
-    Player player1;
-    Player player2;
+    int player1;
+    int player2;
     Level level = Level.HARD;
 
     private void paintAgain(){
@@ -72,8 +71,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void restart(){
         logic = new Logic(FILAS,COLUMNAS);
-        player1 = selectLevel(player1);
-        player2 = new Human(logic.board);
+        setPlayer(player1,player2);
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
     }
@@ -85,10 +83,10 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private boolean canWall(Box p1,Box p2){
-        Dijkstra play1 = new Dijkstra(logic.board,p1);
+    private boolean canWall(Box player1,Box player2){
+        Dijkstra play1 = new Dijkstra(logic.board,player1);
         ArrayList wayPlayer1 = play1.doWay(0);
-        Dijkstra play2 = new Dijkstra(logic.board,p2);
+        Dijkstra play2 = new Dijkstra(logic.board,player2);
         ArrayList wayPlayer2 = play2.doWay(logic.board.game.length-1);
         if(wayPlayer1.size()==0 || wayPlayer2.size()==0){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado, no se puede poner muro",Toast.LENGTH_SHORT);
@@ -97,18 +95,11 @@ public class GameActivity extends AppCompatActivity {
         }
         return true;
     }
-    private boolean action(Box player, Box pressed,Player p){
+    private boolean action(Box player, Box pressed,int destiny){
         Switch butMov=(Switch) findViewById(R.id.eleccionbottom);
-        Log.v(TAG, "accion"+ butMov.isChecked() + " " + player2.isFreeBox(pressed,Status.PLAYER2));
-        if(butMov.isChecked() && player2.isFreeBox(pressed,Status.PLAYER2)){//Movimiento
-            Log.v("SWITCH","entra");
-            Log.v("SWITCH","pinta");
-            ImageButton img = (ImageButton) findViewById(player.getId());
-            img.setImageResource(R.drawable.square);
-            img.setBackgroundResource(0);
-            ImageButton newImg = (ImageButton) findViewById(pressed.getId());
-            newImg.setBackgroundResource(R.drawable.pawn_player_back);
-            if(pressed.getX()==destinyPlayer2){
+        Log.v(TAG, "accion");
+        if(butMov.isChecked() && playerBottom.isFreeBox(pressed)){//Movimiento
+            if(pressed.getX()==destinyPlayer2 && !playerBottom.isFreeBox(pressed)){
                 restart();
                 paintAgain();
                 ganadas++;
@@ -116,13 +107,20 @@ public class GameActivity extends AppCompatActivity {
                 String s= getResources().getString(R.string.ganadas);
                 s= s+ganadas;
                 text.setText(s);
+                return true;
             }
+            if (player != null) {
+                ImageButton img = (ImageButton) findViewById(player.getId());
+                img.setImageResource(R.drawable.square);
+                img.setBackgroundResource(0);
+            }
+            ImageButton img = (ImageButton) findViewById(pressed.getId());
+            img.setBackgroundResource(R.drawable.pawn_player_back);
             return true;
         } else if(!butMov.isChecked()){//pared
-            if(p.putWall(pressed)){
+            if(playerBottom.putWall(pressed)){
                 pressed.setStatus(Status.WALL);
-                Box p2=logic.board.getPlayer(Status.PLAYER1);
-                if(canWall(player,p2)){
+                if(canWall(player,logic.board.getPlayer(Status.PLAYER1))){
                     ImageButton img=(ImageButton) findViewById(pressed.getId());
                     img.setImageResource(R.drawable.square_red);
                     return true;
@@ -134,7 +132,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getMove(Box cpu,int destiny){
-        Box nextBox=player1.getMove(destiny);
+        Box nextBox=playerTop.getMove(destiny);
         if(nextBox==null){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado",Toast.LENGTH_SHORT);
             msg.show();
@@ -155,7 +153,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getWall(int destiny){
-        Box nextBox=player1.putWall(destiny);
+        Box nextBox=playerTop.putWall(destiny);
         if(nextBox==null){
             pcMoves(destinyPlayer1);
             return;
@@ -184,7 +182,7 @@ public class GameActivity extends AppCompatActivity {
         public void onClick(View button){
             Box player = logic.board.getPlayer(Status.PLAYER2);
             Box pressed = logic.board.getPress(x,y);
-            boolean moveOk=action(player,pressed,player2);
+            boolean moveOk=action(player,pressed,destinyPlayer2);
             if(moveOk){
                 pcMoves(destinyPlayer1);
             }
@@ -201,8 +199,8 @@ public class GameActivity extends AppCompatActivity {
     private Status[] setBoxes(Status[] boxes){
         boxes[0]= Status.FREE;
         boxes[1]=Status.WALL;
-        boxes[2]= Status.PLAYER2;
-        boxes[3]=Status.PLAYER1;
+        boxes[2]=Status.PLAYER1;
+        boxes[3]= Status.PLAYER2;
         return boxes;
     }
     private int[] setImages(int[] images){
@@ -215,8 +213,8 @@ public class GameActivity extends AppCompatActivity {
     private int[] setBackgrounds(int[] backs){
         backs[0]= 0;
         backs[1]= 0;
-        backs[2]= R.drawable.pawn_player_back;
-        backs[3]=R.drawable.pawn_computer_back;
+        backs[2]=R.drawable.pawn_computer_back;
+        backs[3]= R.drawable.pawn_player_back;
         return backs;
     }
 
@@ -276,7 +274,7 @@ public class GameActivity extends AppCompatActivity {
             jugadas=savedInstanceState.getInt("jugadas");
             design(statusArray);
             paintWinner();
-            player1=selectLevel(player1);
+            //selectLevel();
         }
     }
     private void paintWinner(){
@@ -291,15 +289,14 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setConfiguration(Bundle configuration){
-        p1= configuration.getInt("player1");
-        p2= configuration.getInt("player2");
+        player1= configuration.getInt("player1");
+        player2= configuration.getInt("player2");
         String user= configuration.getString("user");
-        Log.v("RECUPERANDO: ", p1 + " " + p2 + " " + user);
+        Log.v("RECUPERANDO: ", player1 + " " + player2 + " " + user);
     }
 
-    private void setPlayer(PlayerMode mode1, PlayerMode mode2){
-
-        switch (mode1){
+    private void setPlayer(int player1,int player2){
+        switch (PlayerMode.getVal(player1)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
                 TextView movimiento=(TextView) findViewById(R.id.textMoveTop);
@@ -307,16 +304,15 @@ public class GameActivity extends AppCompatActivity {
                 movimiento.setVisibility(View.VISIBLE);
                 eleccion.setVisibility(View.VISIBLE);
                 wall.setVisibility(View.VISIBLE);
-                //player1 = new Human(logic.board);
+                playerTop = new Human(logic.board);
                 break;
             case CPU:
-               // player1 = new IADijkstra(logic.board);
+                playerTop=selectLevel(playerTop);
                 break;
             case REMOTE:
-
                 break;
         }
-        switch (mode2){
+        switch (PlayerMode.getVal(player2)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
                 TextView movimiento=(TextView) findViewById(R.id.textMoveBottom);
@@ -324,13 +320,12 @@ public class GameActivity extends AppCompatActivity {
                 movimiento.setVisibility(View.VISIBLE);
                 eleccion.setVisibility(View.VISIBLE);
                 wall.setVisibility(View.VISIBLE);
-                //player2 = new Human(logic.board);
+                playerBottom = new Human(logic.board);
                 break;
             case CPU:
-                //player2 = new IADijkstra(logic.board);
+                playerBottom=selectLevel(playerBottom);
                 break;
             case REMOTE:
-
                 break;
         }
     }
@@ -341,22 +336,16 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         Bundle configuration = getIntent().getExtras();
-        logic = new Logic(FILAS,COLUMNAS);
         if(configuration!=null){
             setConfiguration(configuration);
-
-            PlayerMode mode1=PlayerMode.getValue(p1);
-            PlayerMode mode2=PlayerMode.getValue(p2);
-            setPlayer(mode1,mode2);
-            //player1 = new IADijkstra(logic.board);
-            player2 = new Human(logic.board);
+            logic = new Logic(FILAS,COLUMNAS);
+            setPlayer(player1,player2);
         }
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
             recuperateStatus(savedInstanceState);
             return;
         }
-        player1=selectLevel(player1);
         design(statusArray);
         Log.v(TAG, "On create");
         /*
@@ -429,20 +418,20 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void easy() {
-        player1 = new IARandom(logic.board);
+        playerTop = new IARandom(logic.board);
         level = Level.EASY;
         Toast msg = Toast.makeText(GameActivity.this,"Nivel fácil",Toast.LENGTH_LONG);
         msg.show();
     }
 
     private void medium() {
-        player1 = new IAMedium(logic.board);
+        playerTop = new IAMedium(logic.board);
         level = Level.MEDIUM;
         Toast msg = Toast.makeText(GameActivity.this,"Nivel medio",Toast.LENGTH_SHORT);
         msg.show();
     }
     private void hard() {
-        player1 = new IADijkstra(logic.board);
+        playerTop = new IADijkstra(logic.board);
         level = Level.HARD;
         Toast msg = Toast.makeText(GameActivity.this,"Nivel dificil",Toast.LENGTH_SHORT);
         msg.show();

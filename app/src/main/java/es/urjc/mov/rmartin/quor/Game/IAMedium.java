@@ -19,24 +19,18 @@ public class IAMedium extends Player {
         Box move;
         int casillaX;
         int casillaY;
-        System.out.println("Dificultad media");
         do {
-            if(cpu==null) { //primer movimiento
-                casillaY = (int) (Math.random() * b.game[0].length);
-                move = b.getPress(0, casillaY);
-            }else{
-                move = b.getPress(cpu.getX() + 1, cpu.getY());
-                if (move == null || move.getStatus() != Status.FREE) {
-                    casillaX = rand.nextInt(1 + 1 + 1) - 1;
-                    if (casillaX != 0) {
-                        move = b.getPress(Math.abs(casillaX + cpu.getX()), cpu.getY());
-                    } else {
-                        casillaY = rand.nextInt(1 + 1 + 1) - 1;
-                        move = b.getPress(cpu.getX(), Math.abs(casillaY + cpu.getY()));
-                    }
+            move = b.getPress(cpu.getX() + 1, cpu.getY());
+            if (move == null || move.getStatus() != Status.FREE) {
+                casillaX = rand.nextInt(1 + 1 + 1) - 1;
+                if (casillaX != 0) {
+                    move = b.getPress(Math.abs(casillaX + cpu.getX()), cpu.getY());
+                } else {
+                    casillaY = rand.nextInt(1 + 1 + 1) - 1;
+                    move = b.getPress(cpu.getX(), Math.abs(casillaY + cpu.getY()));
                 }
-                cpu.setStatus(Status.FREE);
             }
+            cpu.setStatus(Status.FREE);
         }while (!boxOk(move));
         move.setStatus(Status.PLAYER2);
         return move;

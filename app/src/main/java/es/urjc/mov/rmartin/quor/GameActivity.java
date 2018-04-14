@@ -95,11 +95,12 @@ public class GameActivity extends AppCompatActivity {
         }
         return true;
     }
-    private boolean action(Box player, Box pressed,int destiny){
+
+    private boolean humanAction(Box player2, Box player1,  Box pressed,int destiny,int pawn){
         Switch butMov=(Switch) findViewById(R.id.eleccionbottom);
         Log.v(TAG, "accion");
         if(butMov.isChecked() && playerBottom.isFreeBox(pressed)){//Movimiento
-            if(pressed.getX()==destinyPlayer2 && !playerBottom.isFreeBox(pressed)){
+            if(pressed.getX()==destiny && !playerBottom.isFreeBox(pressed)){
                 restart();
                 paintAgain();
                 ganadas++;
@@ -109,18 +110,18 @@ public class GameActivity extends AppCompatActivity {
                 text.setText(s);
                 return true;
             }
-            if (player != null) {
-                ImageButton img = (ImageButton) findViewById(player.getId());
+            if (player2 != null) {
+                ImageButton img = (ImageButton) findViewById(player2.getId());
                 img.setImageResource(R.drawable.square);
                 img.setBackgroundResource(0);
             }
             ImageButton img = (ImageButton) findViewById(pressed.getId());
-            img.setBackgroundResource(R.drawable.pawn_player_back);
+            img.setBackgroundResource(pawn);
             return true;
         } else if(!butMov.isChecked()){//pared
             if(playerBottom.putWall(pressed)){
                 pressed.setStatus(Status.WALL);
-                if(canWall(player,logic.board.getPlayer(Status.PLAYER1))){
+                if(canWall(player2,player1)){
                     ImageButton img=(ImageButton) findViewById(pressed.getId());
                     img.setImageResource(R.drawable.square_red);
                     return true;
@@ -131,7 +132,7 @@ public class GameActivity extends AppCompatActivity {
         return false;
     }
 
-    private void getMove(Box cpu,int destiny){
+    private void getMove(Box cpu,int destiny,int pawn){
         Box nextBox=playerTop.getMove(destiny);
         if(nextBox==null){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado",Toast.LENGTH_SHORT);
@@ -144,7 +145,8 @@ public class GameActivity extends AppCompatActivity {
             img.setBackgroundResource(0);
         }
         ImageButton img=(ImageButton) findViewById(nextBox.getId());
-        img.setBackgroundResource(R.drawable.pawn_computer_back);
+
+        img.setBackgroundResource(pawn);
         int posicion=nextBox.getX();
         if(posicion==destiny){
             restart();
@@ -165,10 +167,10 @@ public class GameActivity extends AppCompatActivity {
     private void pcMoves(int destiny){
         int move = (int) (Math.random() * 100);
         Box cpu= logic.board.getPlayer(Status.PLAYER1);
-        if (move > PORCENTAJE){ //MOVIMIENTO
-            getMove(cpu,destiny);
+        if (move > PORCENTAJE){
+            getMove(cpu,destiny,R.drawable.pawn_player1_back);
             return;
-        } //PARED
+        }
         getWall(destinyPlayer2);
     }
 
@@ -180,9 +182,10 @@ public class GameActivity extends AppCompatActivity {
             this.y= y;
         }
         public void onClick(View button){
-            Box player = logic.board.getPlayer(Status.PLAYER2);
+            Box player2 = logic.board.getPlayer(Status.PLAYER2);
             Box pressed = logic.board.getPress(x,y);
-            boolean moveOk=action(player,pressed,destinyPlayer2);
+            Box player1 = logic.board.getPlayer(Status.PLAYER1);
+            boolean moveOk=humanAction(player2,player1,pressed,destinyPlayer2,R.drawable.pawn_player2_back);
             if(moveOk){
                 pcMoves(destinyPlayer1);
             }
@@ -213,8 +216,8 @@ public class GameActivity extends AppCompatActivity {
     private int[] setBackgrounds(int[] backs){
         backs[0]= 0;
         backs[1]= 0;
-        backs[2]=R.drawable.pawn_computer_back;
-        backs[3]= R.drawable.pawn_player_back;
+        backs[2]=R.drawable.pawn_player1_back;
+        backs[3]= R.drawable.pawn_player2_back;
         return backs;
     }
 
@@ -268,7 +271,8 @@ public class GameActivity extends AppCompatActivity {
         ArrayList<Integer> statusArray = savedInstanceState.getIntegerArrayList("estados");
         int intLevel = savedInstanceState.getInt("nivel");
         level = Level.values()[intLevel];
-
+        player1=savedInstanceState.getInt("player1");
+        player2=savedInstanceState.getInt("player2");
         if(statusArray!=null){
             ganadas=savedInstanceState.getInt("ganadas");
             jugadas=savedInstanceState.getInt("jugadas");
@@ -336,16 +340,17 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         Bundle configuration = getIntent().getExtras();
+        logic = new Logic(FILAS,COLUMNAS);
         if(configuration!=null){
             setConfiguration(configuration);
-            logic = new Logic(FILAS,COLUMNAS);
-            setPlayer(player1,player2);
         }
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
             recuperateStatus(savedInstanceState);
+            setPlayer(player1,player2);
             return;
         }
+        setPlayer(player1,player2);
         design(statusArray);
         Log.v(TAG, "On create");
         /*
@@ -386,9 +391,11 @@ public class GameActivity extends AppCompatActivity {
         state.putInt("nivel",level.getNum());
         state.putInt("ganadas",ganadas);
         state.putInt("jugadas",jugadas);
+        state.putInt("player1",player1);
+        state.putInt("player2",player2);
         super.onSaveInstanceState(state);
     }
-
+/*
     //MENU
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -441,4 +448,5 @@ public class GameActivity extends AppCompatActivity {
         Intent help = new Intent(GameActivity.this,HelpActivity.class);
         startActivity(help);
     }
+    */
 }

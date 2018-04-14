@@ -47,25 +47,24 @@
                 android:text="@string/winner"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold" />
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="left"
-                android:orientation="horizontal">
-
+                android:orientation="horizontal"
+                android:gravity="center">
                 <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
+                    android:id="@+id/textWallTop"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="casual"
-                    android:text="@string/Pared"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
+                    android:textSize="20sp"
+                    android:fontFamily="casual"
+                    android:visibility="invisible"
+                    android:textStyle="bold"
+                    android:text="@string/Pared"/>
                 <Switch
-                    android:id="@+id/eleccion"
+                    android:id="@+id/eleccionTop"
+                    android:visibility="invisible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -74,14 +73,55 @@
                     android:thumbTint="@color/colorPrimary" />
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textMoveTop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="20sp"
                     android:fontFamily="casual"
-                    android:text="@string/Movimiento"
+                    android:visibility="invisible"
+                    android:textStyle="bold"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:text="@string/Movimiento" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/bottomBoard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textWallBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp"
+                    android:fontFamily="casual"
+                    android:visibility="invisible"
+                    android:textStyle="bold"
+                    android:text="@string/Pared"/>
+
+                <Switch
+                    android:id="@+id/eleccionbottom"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    android:theme="@style/Switch"
+                    android:thumbTint="@color/colorPrimary" />
+
+                <TextView
+                    android:id="@+id/textMoveBottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:fontFamily="casual"
+                    android:visibility="invisible"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="@string/Movimiento" />
             </LinearLayout>
         </LinearLayout>
 
@@ -94,11 +134,11 @@
                 android:id="@+id/tabla"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"></TableLayout>
+                android:layout_gravity="center">
+
+            </TableLayout>
 
         </LinearLayout>
     </LinearLayout>
-
-
 
 </android.widget.LinearLayout>

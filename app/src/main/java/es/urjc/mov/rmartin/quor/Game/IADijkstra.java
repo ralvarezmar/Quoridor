@@ -40,8 +40,8 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public Box getMove(int destiny){
-        Box cpu=b.getCpu();
+    public Box getMove(int destiny,Status player){
+        Box cpu=b.getPlayer(player);
         Box move;
         int casillaY;
         if(cpu==null) { //primer movimiento
@@ -68,9 +68,9 @@ public class IADijkstra extends Player {
 
 
     @Override
-    public Box putWall(int destiny){
+    public Box putWall(int destiny,Status play){
         Box wall;
-        Box player = b.getPlayer(Status.PLAYER2);
+        Box player = b.getPlayer(play);
 
         Dijkstra dijkstra1=new Dijkstra(b,player);
         ArrayList<Box> way = dijkstra1.doWay(destiny);

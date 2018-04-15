@@ -1,9 +1,5 @@
 package es.urjc.mov.rmartin.quor.Game;
 
-/**
- * Created by rmartin on 12/04/18.
- */
-
 public enum PlayerMode {
     HUMAN(0), CPU(1),REMOTE(2);
 

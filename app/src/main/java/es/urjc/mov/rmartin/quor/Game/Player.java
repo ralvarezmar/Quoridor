@@ -25,9 +25,9 @@ public abstract class Player {
     }
 
 
-    public abstract Box getMove(int destiny);
+    public abstract Box getMove(int destiny,Status player);
 
-    public abstract Box putWall(int destiny);
+    public abstract Box putWall(int destiny,Status play);
 
     public abstract boolean isFreeBox(Box pressed);
     public abstract boolean putWall(Box pressed);

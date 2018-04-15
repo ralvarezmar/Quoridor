@@ -35,17 +35,6 @@ public class Board{
         return null;
     }
 
-    public Box getCpu(){
-        for (int i = 0; i < game.length; i++) {
-            for(int j= 0;j <game[i].length;j++){
-                Box b = game[i][j];
-                if (b.getStatus() == Status.PLAYER1) {
-                    return b;
-                }
-            }
-        }
-        return null;
-    }
 
     public ArrayList<Integer> getArrayStatus(){
         ArrayList<Integer> casillasEstado = new ArrayList<>();

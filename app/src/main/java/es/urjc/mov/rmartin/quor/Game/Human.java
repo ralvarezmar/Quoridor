@@ -34,12 +34,12 @@ public class Human extends Player {
     }
 
     @Override
-    public Box getMove(int destiny) {
+    public Box getMove(int destiny,Status player) {
         return null;
     }
 
     @Override
-    public Box putWall(int destiny) {
+    public Box putWall(int destiny,Status play) {
         return null;
     }
 }

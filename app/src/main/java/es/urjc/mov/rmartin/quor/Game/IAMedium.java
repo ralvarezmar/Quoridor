@@ -13,9 +13,9 @@ public class IAMedium extends Player {
         this.b=b;}
 
     @Override
-    public Box getMove(int destiny){
+    public Box getMove(int destiny,Status player){
         Random rand = new Random();
-        Box cpu=b.getCpu();
+        Box cpu=b.getPlayer(player);
         Box move;
         int casillaX;
         int casillaY;
@@ -37,12 +37,12 @@ public class IAMedium extends Player {
     }
 
     @Override
-    public Box putWall(int destiny){
+    public Box putWall(int destiny,Status play){
         Box wall;
         Random rand = new Random();
         int casillaX;
         int casillaY;
-        Box player = b.getPlayer(Status.PLAYER2);
+        Box player = b.getPlayer(play);
 
         do{
             if (player==null){

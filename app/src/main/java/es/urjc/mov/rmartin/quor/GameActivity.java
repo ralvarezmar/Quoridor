@@ -96,11 +96,11 @@ public class GameActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean humanAction(Box player2, Box player1,  Box pressed,int destiny,int pawn){
+    private boolean humanAction(Player player,Box player2, Box player1, Box pressed,int destiny,int pawn){
         Switch butMov=(Switch) findViewById(R.id.eleccionbottom);
         Log.v(TAG, "accion");
-        if(butMov.isChecked() && playerBottom.isFreeBox(pressed)){//Movimiento
-            if(pressed.getX()==destiny && !playerBottom.isFreeBox(pressed)){
+        if(butMov.isChecked() && player.isFreeBox(pressed)){//Movimiento
+            if(pressed.getX()==destiny && !player.isFreeBox(pressed)){
                 restart();
                 paintAgain();
                 ganadas++;
@@ -119,7 +119,7 @@ public class GameActivity extends AppCompatActivity {
             img.setBackgroundResource(pawn);
             return true;
         } else if(!butMov.isChecked()){//pared
-            if(playerBottom.putWall(pressed)){
+            if(player.putWall(pressed)){
                 pressed.setStatus(Status.WALL);
                 if(canWall(player2,player1)){
                     ImageButton img=(ImageButton) findViewById(pressed.getId());
@@ -132,8 +132,9 @@ public class GameActivity extends AppCompatActivity {
         return false;
     }
 
-    private void getMove(Box cpu,int destiny,int pawn){
-        Box nextBox=playerTop.getMove(destiny);
+    private void getMove(Player player, Status status, int destiny,int pawn){
+        Box cpu= logic.board.getPlayer(status);
+        Box nextBox=player.getMove(destiny,status);
         if(nextBox==null){
             Toast msg = Toast.makeText(GameActivity.this,"Camino bloqueado",Toast.LENGTH_SHORT);
             msg.show();
@@ -154,8 +155,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void getWall(int destiny){
-        Box nextBox=playerTop.putWall(destiny);
+    private void getWall(Player player, int destiny,Status status){
+        Box nextBox=player.putWall(destiny,status);
         if(nextBox==null){
             pcMoves(destinyPlayer1);
             return;
@@ -166,12 +167,11 @@ public class GameActivity extends AppCompatActivity {
 
     private void pcMoves(int destiny){
         int move = (int) (Math.random() * 100);
-        Box cpu= logic.board.getPlayer(Status.PLAYER1);
         if (move > PORCENTAJE){
-            getMove(cpu,destiny,R.drawable.pawn_player1_back);
+            getMove(playerTop, Status.PLAYER1, destiny,R.drawable.pawn_player1_back);
             return;
         }
-        getWall(destinyPlayer2);
+        getWall(playerTop,destinyPlayer2,Status.PLAYER2);
     }
 
     public class GameBoton implements View.OnClickListener{
@@ -185,7 +185,7 @@ public class GameActivity extends AppCompatActivity {
             Box player2 = logic.board.getPlayer(Status.PLAYER2);
             Box pressed = logic.board.getPress(x,y);
             Box player1 = logic.board.getPlayer(Status.PLAYER1);
-            boolean moveOk=humanAction(player2,player1,pressed,destinyPlayer2,R.drawable.pawn_player2_back);
+            boolean moveOk=humanAction(playerBottom,player2,player1,pressed,destinyPlayer2,R.drawable.pawn_player2_back);
             if(moveOk){
                 pcMoves(destinyPlayer1);
             }

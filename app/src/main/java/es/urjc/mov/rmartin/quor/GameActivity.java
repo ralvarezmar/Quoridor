@@ -44,6 +44,8 @@ public class GameActivity extends AppCompatActivity {
     int player1;
     int player2;
     Level level = Level.HARD;
+    Player turn[];
+    int contador=0;
 
     private void paintAgain(){
         design(logic.board.getArrayStatus());
@@ -96,8 +98,8 @@ public class GameActivity extends AppCompatActivity {
         return true;
     }
 
-    private boolean humanAction(Player player,Box player2, Box player1, Box pressed,int destiny,int pawn){
-        Switch butMov=(Switch) findViewById(R.id.eleccionbottom);
+    private boolean humanAction(Player player,Box player2, Box player1, Box pressed,int destiny,int pawn, int select){
+        Switch butMov=(Switch) findViewById(select);
         Log.v(TAG, "accion");
         if(butMov.isChecked() && player.isFreeBox(pressed)){//Movimiento
             if(pressed.getX()==destiny && !player.isFreeBox(pressed)){
@@ -182,14 +184,32 @@ public class GameActivity extends AppCompatActivity {
             this.y= y;
         }
         public void onClick(View button){
-            Box player2 = logic.board.getPlayer(Status.PLAYER2);
+            Box p2 = logic.board.getPlayer(Status.PLAYER2);
             Box pressed = logic.board.getPress(x,y);
-            Box player1 = logic.board.getPlayer(Status.PLAYER1);
-            boolean moveOk=humanAction(playerBottom,player2,player1,pressed,destinyPlayer2,R.drawable.pawn_player2_back);
+            Box p1 = logic.board.getPlayer(Status.PLAYER1);
+            if (turn[contador%2]==playerTop){
+                selectMove(x,y,player1,destinyPlayer1);
+            }else{
+                selectMove(x,y,player2,destinyPlayer2);
+            }
+
+
+            boolean moveOk=humanAction(playerBottom,p2,p1,pressed,destinyPlayer2,R.drawable.pawn_player2_back,R.id.eleccionbottom);
             if(moveOk){
                 pcMoves(destinyPlayer1);
             }
             Log.v(TAG,"boton game");
+        }
+    }
+
+    private void selectMove(int x, int y,int player, int destiny){
+        if(PlayerMode.getVal(player)!=PlayerMode.CPU){
+            Box player1 = logic.board.getPlayer(Status.PLAYER1);
+            Box player2 = logic.board.getPlayer(Status.PLAYER2);
+            Box pressed = logic.board.getPress(x,y);
+            humanAction(playerTop,player1,player2,pressed,destiny,R.drawable.pawn_player1_back,R.id.eleccionTop);
+        }else{
+            pcMoves(destiny);
         }
     }
 
@@ -300,6 +320,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setPlayer(int player1,int player2){
+        turn=new Player[2];
         switch (PlayerMode.getVal(player1)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
@@ -316,6 +337,7 @@ public class GameActivity extends AppCompatActivity {
             case REMOTE:
                 break;
         }
+        turn[0]=playerTop;
         switch (PlayerMode.getVal(player2)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
@@ -332,6 +354,7 @@ public class GameActivity extends AppCompatActivity {
             case REMOTE:
                 break;
         }
+        turn[1]=playerTop;
     }
 
     //syncronize para pedir jugadas
@@ -341,6 +364,7 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
         Bundle configuration = getIntent().getExtras();
         logic = new Logic(FILAS,COLUMNAS);
+
         if(configuration!=null){
             setConfiguration(configuration);
         }

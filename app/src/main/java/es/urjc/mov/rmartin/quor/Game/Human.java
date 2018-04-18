@@ -1,8 +1,16 @@
 package es.urjc.mov.rmartin.quor.Game;
 
+import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.Switch;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
+import es.urjc.mov.rmartin.quor.R;
 
 public class Human extends Player {
     Board b;
@@ -15,22 +23,51 @@ public class Human extends Player {
     }
 
     @Override
-    public boolean isFreeBox(Box pressed){
-        Box b=board.getPlayer(Status.PLAYER2);
+    public boolean isFreeBox(Box pressed,Status player){
+        Box b=board.getPlayer(player);
         if(isFirstMove(pressed,b)) {
-            pressed.setStatus(Status.PLAYER2);
+            pressed.setStatus(player);
             return true;
-        }else if(isMoveValid(pressed, Status.PLAYER2)) {
-            pressed.setStatus(Status.PLAYER2);
+        }else if(isMoveValid(pressed, player)) {
+            pressed.setStatus(player);
             b.setStatus(Status.FREE);
             return true;
         }
         return false;
     }
 
-    @Override
-    public boolean putWall(Box pressed){
+    private boolean canWall(Box player1,Box player2){
+        Dijkstra play1 = new Dijkstra(board,player1);
+        ArrayList wayPlayer1 = play1.doWay(0);
+        Dijkstra play2 = new Dijkstra(board,player2);
+        ArrayList wayPlayer2 = play2.doWay(board.game.length-1);
+        if(wayPlayer1.size()==0 || wayPlayer2.size()==0){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean putWall(Box pressed){
         return pressed.getStatus()==Status.FREE;
+    }
+
+    @Override
+    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+        if(checked && isFreeBox(pressed,statusPlayer)){
+            return true;
+        } else if(!checked){//pared
+            if(putWall(pressed)){
+                Log.v("askPlay","entra if");
+                pressed.setStatus(Status.WALL);
+                Box p1=b.getPlayer(statusPlayer);
+                Box p2=b.getPlayer(statusOpposite);
+                if(canWall(p2,p1)){
+                    return true;
+                }
+                pressed.setStatus(Status.FREE);
+            }
+        }
+        return false;
     }
 
     @Override

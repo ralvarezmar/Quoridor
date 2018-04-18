@@ -8,6 +8,7 @@ import java.util.Random;
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
+import es.urjc.mov.rmartin.quor.R;
 
 
 public class IADijkstra extends Player {
@@ -15,7 +16,7 @@ public class IADijkstra extends Player {
     public IADijkstra(Board b){
         super(b);
         this.b=b;}
-
+    static final int PORCENTAJE = 20;
 
     private Box getRandom(Box cpu){
         Box move;
@@ -62,7 +63,7 @@ public class IADijkstra extends Player {
             //way.remove(way.size()-1);
             cpu.setStatus(Status.FREE);
         }
-        move.setStatus(Status.PLAYER1);
+        move.setStatus(player);
         return move;
     }
 
@@ -85,14 +86,29 @@ public class IADijkstra extends Player {
         return wall;
     }
 
-
     @Override
-    public boolean isFreeBox(Box pressed) {
-        return false;
+    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+        int destinyPlayer;
+        int destinyOpposite;
+        if(statusPlayer==Status.PLAYER1){
+            destinyPlayer=b.game.length-1;
+            destinyOpposite=0;
+        }else{
+            destinyPlayer=0;
+            destinyOpposite=b.game.length-1;
+        }
+        int move = (int) (Math.random() * 100);
+        if (move > PORCENTAJE){
+            getMove(destinyPlayer, statusPlayer);
+            return true;
+        }
+        putWall(destinyOpposite,Status.PLAYER2);
+        return true;
     }
 
     @Override
-    public boolean putWall(Box pressed) {
+    public boolean isFreeBox(Box pressed,Status player) {
         return false;
     }
+
 }

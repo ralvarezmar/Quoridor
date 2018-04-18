@@ -65,13 +65,13 @@ public class IAMedium extends Player {
         return wall;
     }
 
-    @Override
-    public boolean isFreeBox(Box pressed) {
+    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
         return false;
     }
 
     @Override
-    public boolean putWall(Box pressed) {
+    public boolean isFreeBox(Box pressed,Status player) {
         return false;
     }
+
 }

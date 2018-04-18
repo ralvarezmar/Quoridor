@@ -29,6 +29,7 @@ public abstract class Player {
 
     public abstract Box putWall(int destiny,Status play);
 
-    public abstract boolean isFreeBox(Box pressed);
-    public abstract boolean putWall(Box pressed);
+    public abstract boolean isFreeBox(Box pressed,Status player);
+
+    public abstract boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked);
 }

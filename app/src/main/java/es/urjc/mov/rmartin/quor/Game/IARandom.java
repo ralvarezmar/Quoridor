@@ -34,7 +34,6 @@ public class IARandom extends Player {
         return move;
     }
 
-
     @Override
     public Box putWall(int destiny,Status play){
         Box wall;
@@ -50,12 +49,13 @@ public class IARandom extends Player {
     }
 
     @Override
-    public boolean isFreeBox(Box pressed) {
+    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
         return false;
     }
 
     @Override
-    public boolean putWall(Box pressed) {
+    public boolean isFreeBox(Box pressed,Status player) {
         return false;
     }
+
 }

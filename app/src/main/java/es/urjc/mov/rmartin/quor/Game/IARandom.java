@@ -12,6 +12,7 @@ public class IARandom extends Player {
     public IARandom(Board board) {
         super(board);
     }
+    private static final int PORCENTAJE = 20;
 
     @Override
     public Box getMove(int destiny,Status player){
@@ -49,8 +50,25 @@ public class IARandom extends Player {
     }
 
     @Override
-    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
-        return false;
+    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+        int destinyPlayer;
+        int destinyOpposite;
+        if(statusPlayer==Status.PLAYER1){
+            destinyPlayer=board.game.length-1;
+            destinyOpposite=0;
+        }else{
+            destinyPlayer=0;
+            destinyOpposite=board.game.length-1;
+        }
+        int move = (int) (Math.random() * 100);
+        if (move > PORCENTAJE){
+            Box casilla= getMove(destinyPlayer, statusPlayer);
+            Move m=new Move(casilla.getCoordenate(),true);
+            return m;
+        }
+        Box casilla=putWall(destinyOpposite,Status.PLAYER2);
+        Move m=new Move(casilla.getCoordenate(),true);
+        return m;
     }
 
     @Override

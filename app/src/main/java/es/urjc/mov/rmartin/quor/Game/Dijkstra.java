@@ -28,7 +28,7 @@ public class Dijkstra {
         public String toString(){
             String s;
             if(this.prev.box!=null){
-                s=this.prev.box.getX()+ " "+this.prev.box.getY();
+                s=this.prev.box.getCoordenate().getX()+ " "+this.prev.box.getCoordenate().getY();
             }else{
                 s="null";
             }
@@ -48,8 +48,8 @@ public class Dijkstra {
         int x=0;
         int y=0;
         if(box!=null){
-            x=box.getX();
-            y=box.getY();
+            x=box.getCoordenate().getX();
+            y=box.getCoordenate().getY();
         }
         for(int i=0;i<b.game.length;i++){
             for(int j=0;j<b.game[i].length;j++){
@@ -70,8 +70,8 @@ public class Dijkstra {
         int x=0;
         int y=0;
         if(pos!=null){
-            x=pos.getX();
-            y=pos.getY();
+            x=pos.getCoordenate().getX();
+            y=pos.getCoordenate().getY();
         }
         int pesoViejo=matriz[x][y].lenght;
         //Log.v("visit ",x + " " + y);
@@ -87,8 +87,8 @@ public class Dijkstra {
             //Log.v("Alrededor: ", around.toString());
             for (Box posAct : around) {
                 visit(posAct, matriz[x][y], peso + 1,destiny);
-                if (posAct.getX() == destiny) {
-                    lastyVisited=posAct.getY();
+                if (posAct.getCoordenate().getX() == destiny) {
+                    lastyVisited=posAct.getCoordenate().getY();
                     return;
                 }
             }

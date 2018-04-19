@@ -11,12 +11,13 @@ public class Board{
         int id=0;
         for(int i=0;i<filas;i++){
             for(int j=0;j<columnas;j++){
+                Coordinate c=new Coordinate(i,j);
                 if(j==(columnas-1)/2 && i==0){
-                    b=new Box(i,j,id, Status.PLAYER1);
+                    b=new Box(c,id, Status.PLAYER1);
                 }else if(j==(columnas-1)/2 && i==filas-1) {
-                    b = new Box(i, j, id, Status.PLAYER2);
+                    b = new Box(c, id, Status.PLAYER2);
                 }else{
-                    b = new Box(i, j, id, Status.FREE);
+                    b = new Box(c, id, Status.FREE);
                 }
                 game[i][j]=b;
                 id++;
@@ -56,8 +57,8 @@ public class Board{
     }
 
     private Boolean boxValid(Box box, int i, int j){
-        int x = box.getX();
-        int y = box.getY();
+        int x = box.getCoordenate().getX();
+        int y = box.getCoordenate().getY();
         return (i+x>=0 && i+x<(game[0].length) && (j+y>=0 && j+y<(game[0].length)) &&
                 ((i==-1 && j==0) || (i==1 && j==0) ||(j==1 && i==0)||(j==-1  && i==0)) &&
                 game[i+x][j+y].getStatus() == Status.FREE);
@@ -73,8 +74,8 @@ public class Board{
             }
             return boxes;
         }
-        int x= box.getX();
-        int y= box.getY();
+        int x= box.getCoordenate().getX();
+        int y= box.getCoordenate().getY();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if(boxValid(box,i,j)){

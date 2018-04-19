@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public abstract class Player {
@@ -14,8 +15,10 @@ public abstract class Player {
     }
 
     boolean boxOk(Box box){
-        return !((box == null || (box.getX() < 0 && box.getX() > (board.game[0].length-1))) ||
-                (box.getY() < 0 && box.getY() > (board.game[0].length-1) || box.getStatus() != Status.FREE));
+        int x= box.getCoordenate().getX();
+        int y= box.getCoordenate().getY();
+        return !((box == null || (x < 0 && x > (board.game[0].length-1))) ||
+                (y < 0 && y > (board.game[0].length-1) || box.getStatus() != Status.FREE));
     }
 
     boolean isMoveValid(Box pressed, Status player){
@@ -31,5 +34,5 @@ public abstract class Player {
 
     public abstract boolean isFreeBox(Box pressed,Status player);
 
-    public abstract boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked);
+    public abstract Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked);
 }

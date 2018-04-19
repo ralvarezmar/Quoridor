@@ -15,11 +15,13 @@ import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
 import es.urjc.mov.rmartin.quor.Game.Level;
 import es.urjc.mov.rmartin.quor.Game.Logic;
+import es.urjc.mov.rmartin.quor.Game.Move;
 import es.urjc.mov.rmartin.quor.Game.Player;
 import es.urjc.mov.rmartin.quor.Game.IAMedium;
 import es.urjc.mov.rmartin.quor.Game.IARandom;
 import es.urjc.mov.rmartin.quor.Game.PlayerMode;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class GameActivity extends AppCompatActivity {
@@ -85,21 +87,31 @@ public class GameActivity extends AppCompatActivity {
             this.y= y;
         }
         public void onClick(View button){
+            //meter jugada se queda parado hasta que desde el onclick le paso esta jugada
+            Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
+            Coordinate c=new Coordinate(x,y);
+            Move m = new Move(c,eleccion.isChecked());
+            //humano.meterJugada(m);
+
+
+/*
             Box pressed = logic.board.getPress(x,y);
             if(turn[contador%2]==playerTop){
-                Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
                 if(turn[contador%2].askPlay(pressed,Status.PLAYER1,Status.PLAYER2,eleccion.isChecked())){
                     contador++;
                 }
             }else{
-                Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
+               // Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
                 if(turn[contador%2].askPlay(pressed,Status.PLAYER2,Status.PLAYER1,eleccion.isChecked())){
                     contador++;
                 }
-            }
+            }*/
             Box player1=logic.board.getPlayer(Status.PLAYER1);
             Box player2=logic.board.getPlayer(Status.PLAYER2);
-            if(player1.getX()==FILAS-1 || player2.getX()==0){
+            Coordinate cPlayer1=player1.getCoordenate();
+            Coordinate cPlayer2=player2.getCoordenate();
+
+            if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
                 restart();
                 paintAgain();
             }

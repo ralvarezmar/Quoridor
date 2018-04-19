@@ -19,7 +19,7 @@ public class Human extends Player {
         this.b=b;}
 
     public boolean isFirstMove(Box pressed,Box b){
-        return (b==null && (pressed.getX()==(this.b.game.length-1)) && pressed.getStatus()== Status.FREE);
+        return (b==null && (pressed.getCoordenate().getX()==(this.b.game.length-1)) && pressed.getStatus()== Status.FREE);
     }
 
     @Override
@@ -52,9 +52,10 @@ public class Human extends Player {
     }
 
     @Override
-    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
         if(checked && isFreeBox(pressed,statusPlayer)){
-            return true;
+            Move m= new Move(pressed.getCoordenate(),false);
+            return m;
         } else if(!checked){//pared
             if(putWall(pressed)){
                 Log.v("askPlay","entra if");
@@ -62,13 +63,14 @@ public class Human extends Player {
                 Box p1=b.getPlayer(statusPlayer);
                 Box p2=b.getPlayer(statusOpposite);
                 if(canWall(p2,p1)){
-                    return true;
+                    Move m= new Move(pressed.getCoordenate(),false);
+                    return m;
                 }
                 pressed.setStatus(Status.FREE);
             }
         }
-        return false;
-    }
+        return null;
+    }//quitar el cambio de estados aqui y comprobar si es valida o no después de devolver la jugada(en game activity)
 
     @Override
     public Box getMove(int destiny,Status player) {

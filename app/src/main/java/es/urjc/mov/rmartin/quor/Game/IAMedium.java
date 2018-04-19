@@ -11,6 +11,7 @@ public class IAMedium extends Player {
     public IAMedium(Board b){
         super(b);
         this.b=b;}
+    private static final int PORCENTAJE = 20;
 
     @Override
     public Box getMove(int destiny,Status player){
@@ -20,14 +21,14 @@ public class IAMedium extends Player {
         int casillaX;
         int casillaY;
         do {
-            move = b.getPress(cpu.getX() + 1, cpu.getY());
+            move = b.getPress(cpu.getCoordenate().getX() + 1, cpu.getCoordenate().getY());
             if (move == null || move.getStatus() != Status.FREE) {
                 casillaX = rand.nextInt(1 + 1 + 1) - 1;
                 if (casillaX != 0) {
-                    move = b.getPress(Math.abs(casillaX + cpu.getX()), cpu.getY());
+                    move = b.getPress(Math.abs(casillaX + cpu.getCoordenate().getX()), cpu.getCoordenate().getY());
                 } else {
                     casillaY = rand.nextInt(1 + 1 + 1) - 1;
-                    move = b.getPress(cpu.getX(), Math.abs(casillaY + cpu.getY()));
+                    move = b.getPress(cpu.getCoordenate().getX(), Math.abs(casillaY + cpu.getCoordenate().getY()));
                 }
             }
             cpu.setStatus(Status.FREE);
@@ -49,14 +50,14 @@ public class IAMedium extends Player {
                 casillaY = (int) (Math.random() * b.game[0].length);
                 wall=b.getPress((int) (b.game[0].length-1),casillaY);
             }else{
-                wall=b.getPress(player.getX()-1,player.getY());
+                wall=b.getPress(player.getCoordenate().getX()-1,player.getCoordenate().getY());
                 if(wall==null || wall.getStatus()!= Status.FREE){
                     casillaX = rand.nextInt(1 + 1 + 1) - 1;
                     if(casillaX!=0){
-                        wall = b.getPress(Math.abs(casillaX + player.getX()), player.getY());
+                        wall = b.getPress(Math.abs(casillaX + player.getCoordenate().getX()), player.getCoordenate().getY());
                     }else{
                         casillaY = rand.nextInt(1 + 1 + 1) - 1;
-                        wall = b.getPress(player.getX(), Math.abs(casillaY + player.getY()));
+                        wall = b.getPress(player.getCoordenate().getX(), Math.abs(casillaY + player.getCoordenate().getY()));
                     }
                 }
             }
@@ -65,8 +66,25 @@ public class IAMedium extends Player {
         return wall;
     }
 
-    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
-        return false;
+    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+        int destinyPlayer;
+        int destinyOpposite;
+        if(statusPlayer==Status.PLAYER1){
+            destinyPlayer=b.game.length-1;
+            destinyOpposite=0;
+        }else{
+            destinyPlayer=0;
+            destinyOpposite=b.game.length-1;
+        }
+        int move = (int) (Math.random() * 100);
+        if (move > PORCENTAJE){
+            Box casilla = getMove(destinyPlayer, statusPlayer);
+            Move m=new Move(casilla.getCoordenate(),true);
+            return m;
+        }
+       Box casilla= putWall(destinyOpposite,Status.PLAYER2);
+        Move m=new Move(casilla.getCoordenate(),false);
+        return m;
     }
 
     @Override

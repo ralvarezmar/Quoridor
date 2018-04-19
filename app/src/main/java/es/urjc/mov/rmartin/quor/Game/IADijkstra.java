@@ -16,7 +16,7 @@ public class IADijkstra extends Player {
     public IADijkstra(Board b){
         super(b);
         this.b=b;}
-    static final int PORCENTAJE = 20;
+    private static final int PORCENTAJE = 20;
 
     private Box getRandom(Box cpu){
         Box move;
@@ -24,14 +24,14 @@ public class IADijkstra extends Player {
         int casillaX;
         int casillaY;
         do {
-            move = b.getPress(cpu.getX() + 1, cpu.getY());
+            move = b.getPress(cpu.getCoordenate().getX() + 1, cpu.getCoordenate().getY());
             if (move == null || move.getStatus() != Status.FREE) {
                 casillaX = rand.nextInt(1 + 1 + 1) - 1;
                 if (casillaX != 0) {
-                    move = b.getPress(Math.abs(casillaX + cpu.getX()), cpu.getY());
+                    move = b.getPress(Math.abs(casillaX + cpu.getCoordenate().getX()), cpu.getCoordenate().getY());
                 } else {
                     casillaY = rand.nextInt(1 + 1 + 1) - 1;
-                    move = b.getPress(cpu.getX(), Math.abs(casillaY + cpu.getY()));
+                    move = b.getPress(cpu.getCoordenate().getX(), Math.abs(casillaY + cpu.getCoordenate().getY()));
                 }
             }
             cpu.setStatus(Status.FREE);
@@ -78,7 +78,6 @@ public class IADijkstra extends Player {
         wall= way.get(way.size()-1);
         wall.setStatus(Status.WALL);
         way = dijkstra1.doWay(destiny);
-        //wall= way.get(way.size()-1);
         if(way.size()==0) {
             wall.setStatus(Status.FREE);
             wall=null;
@@ -87,7 +86,7 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public boolean askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
         int destinyPlayer;
         int destinyOpposite;
         if(statusPlayer==Status.PLAYER1){
@@ -99,11 +98,14 @@ public class IADijkstra extends Player {
         }
         int move = (int) (Math.random() * 100);
         if (move > PORCENTAJE){
-            getMove(destinyPlayer, statusPlayer);
-            return true;
+            Box b= getMove(destinyPlayer, statusPlayer);
+            Move m=new Move(b.getCoordenate(),true);
+            return m;
         }
-        putWall(destinyOpposite,Status.PLAYER2);
-        return true;
+        Box b= putWall(destinyOpposite,Status.PLAYER2);
+        Move m=new Move(b.getCoordenate(),false);
+        return m;
+        //DEVUELVE TIPO JUGADA Y EN EL GAMEACTIVITY CAMBIO LOS ESTADOS DESPUES DE COMPROBAR QUE LA JUGADA SEA VALIDA
     }
 
     @Override

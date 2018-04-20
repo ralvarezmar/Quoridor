@@ -35,4 +35,6 @@ public abstract class Player {
     public abstract boolean isFreeBox(Box pressed,Status player);
 
     public abstract Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked);
+
+    public abstract Move putPlay(Coordinate c, boolean checked);
 }

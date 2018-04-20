@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 import es.urjc.mov.rmartin.quor.R;
 
@@ -67,10 +68,19 @@ public class Human extends Player {
                     return m;
                 }
                 pressed.setStatus(Status.FREE);
+                return null;
+                //pressed.setStatus(Status.FREE);
             }
         }
         return null;
     }//quitar el cambio de estados aqui y comprobar si es valida o no después de devolver la jugada(en game activity)
+
+    @Override
+    public Move putPlay(Coordinate c, boolean checked) {
+        Move move = new Move(c,checked);
+        return move;
+    }
+
 
     @Override
     public Box getMove(int destiny,Status player) {
@@ -82,3 +92,9 @@ public class Human extends Player {
         return null;
     }
 }
+
+/*
+Tu desde el hilo que lanzas pides jugada da igual el que sea
+Si es un humano el pedir jugada se va a quedar tostao hasta que se la rellenes con el meter jugada, que eso lo haces desde el onClick
+Y si es ia pues rellena la jugada como siempre
+ */

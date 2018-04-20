@@ -90,9 +90,6 @@ public class GameActivity extends AppCompatActivity {
             //meter jugada se queda parado hasta que desde el onclick le paso esta jugada
             Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
             Coordinate c=new Coordinate(x,y);
-            Move m = new Move(c,eleccion.isChecked());
-            //humano.meterJugada(m);
-
 
 /*
             Box pressed = logic.board.getPress(x,y);
@@ -290,8 +287,13 @@ public class GameActivity extends AppCompatActivity {
         Log.v(TAG, "On create");
 
         new Thread(new Runnable() {
-            public void run() {
-                design(statusArray);
+            public void run(){
+                if(humanTurn[contador%2]!=null){
+                    //humanTurn[contador%2].askPlay(putPlay());
+                }else{
+                    //turn[contador%2].askPlay();
+                }
+                contador++;
             }
         }).start();
     }

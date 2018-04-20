@@ -7,6 +7,7 @@ import java.util.Random;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 import es.urjc.mov.rmartin.quor.R;
 
@@ -106,6 +107,11 @@ public class IADijkstra extends Player {
         Move m=new Move(b.getCoordenate(),false);
         return m;
         //DEVUELVE TIPO JUGADA Y EN EL GAMEACTIVITY CAMBIO LOS ESTADOS DESPUES DE COMPROBAR QUE LA JUGADA SEA VALIDA
+    }
+
+    @Override
+    public Move putPlay(Coordinate c, boolean checked) {
+        return null;
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.Random;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class IARandom extends Player {
@@ -69,6 +70,11 @@ public class IARandom extends Player {
         Box casilla=putWall(destinyOpposite,Status.PLAYER2);
         Move m=new Move(casilla.getCoordenate(),true);
         return m;
+    }
+
+    @Override
+    public Move putPlay(Coordinate c, boolean checked) {
+        return null;
     }
 
     @Override

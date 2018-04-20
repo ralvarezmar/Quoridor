@@ -4,6 +4,7 @@ import java.util.Random;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class IAMedium extends Player {
@@ -65,7 +66,7 @@ public class IAMedium extends Player {
         wall.setStatus(Status.WALL);
         return wall;
     }
-
+    @Override
     public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
         int destinyPlayer;
         int destinyOpposite;
@@ -85,6 +86,11 @@ public class IAMedium extends Player {
        Box casilla= putWall(destinyOpposite,Status.PLAYER2);
         Move m=new Move(casilla.getCoordenate(),false);
         return m;
+    }
+
+    @Override
+    public Move putPlay(Coordinate c, boolean checked) {
+        return null;
     }
 
     @Override

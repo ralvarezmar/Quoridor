@@ -51,7 +51,7 @@ public class IARandom extends Player {
     }
 
     @Override
-    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+    public synchronized Move askPlay(Status statusPlayer){
         int destinyPlayer;
         int destinyOpposite;
         if(statusPlayer==Status.PLAYER1){
@@ -75,6 +75,11 @@ public class IARandom extends Player {
     @Override
     public Move putPlay(Coordinate c, boolean checked) {
         return null;
+    }
+
+    @Override
+    public boolean validMove(Move move, Status status) {
+        return false;
     }
 
     @Override

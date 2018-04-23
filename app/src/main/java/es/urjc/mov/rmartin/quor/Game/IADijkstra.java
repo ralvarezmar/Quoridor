@@ -73,7 +73,6 @@ public class IADijkstra extends Player {
     public Box putWall(int destiny,Status play){
         Box wall;
         Box player = b.getPlayer(play);
-
         Dijkstra dijkstra1=new Dijkstra(b,player);
         ArrayList<Box> way = dijkstra1.doWay(destiny);
         wall= way.get(way.size()-1);
@@ -87,7 +86,7 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public synchronized Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked){
+    public synchronized Move askPlay(Status statusPlayer){
         int destinyPlayer;
         int destinyOpposite;
         if(statusPlayer==Status.PLAYER1){
@@ -112,6 +111,11 @@ public class IADijkstra extends Player {
     @Override
     public Move putPlay(Coordinate c, boolean checked) {
         return null;
+    }
+
+    @Override
+    public boolean validMove(Move move, Status status) {
+        return false;
     }
 
     @Override

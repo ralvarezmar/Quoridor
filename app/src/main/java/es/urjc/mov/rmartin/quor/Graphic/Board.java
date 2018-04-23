@@ -49,6 +49,14 @@ public class Board{
         return casillasEstado;
     }
 
+    public Box getPress(Coordinate c){
+        int x=c.getX();
+        int y=c.getY();
+        if(x>=0 && c.getY()<game.length && y>=0 && y<game[0].length){
+            return game[x][y];
+        }
+        return null;
+    }
     public Box getPress(int x,int y){
         if(x>=0 && x<game.length && y>=0 && y<game[0].length){
             return game[x][y];

@@ -88,8 +88,25 @@ public class GameActivity extends AppCompatActivity {
         }
         public void onClick(View button){
             //meter jugada se queda parado hasta que desde el onclick le paso esta jugada
-            Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
+            Switch eleccion;
+            Status player;
+            if(contador%2==1){
+                eleccion = (Switch) findViewById(R.id.eleccionbottom);
+                player=Status.PLAYER2;
+            }else {
+                eleccion = (Switch) findViewById(R.id.eleccionTop);
+                player=Status.PLAYER1;
+            }
             Coordinate c=new Coordinate(x,y);
+            ////COMPROBAR SI M ES VALIDO
+            Boolean check = eleccion.isChecked();
+            Box pressed;
+            Move m;
+            do{
+                m = humanTurn[contador % 2].putPlay(c,check);
+                Log.v("Jugador", m.getC() + " " + m.getType());
+            }while(!humanTurn[contador % 2].validMove(m,player));
+
 
 /*
             Box pressed = logic.board.getPress(x,y);
@@ -276,24 +293,38 @@ public class GameActivity extends AppCompatActivity {
         if(configuration!=null){
             setConfiguration(configuration);
         }
-        final ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
             recuperateStatus(savedInstanceState);
             setPlayer(player1,player2);
             return;
         }
         setPlayer(player1,player2);
-        //design(statusArray);
+        design(statusArray);
         Log.v(TAG, "On create");
-
         new Thread(new Runnable() {
             public void run(){
-                if(humanTurn[contador%2]!=null){
-                    //humanTurn[contador%2].askPlay(putPlay());
-                }else{
-                    //turn[contador%2].askPlay();
+                while (true) {
+                    Log.v("contador", "Numero: " + contador);
+                    Status status=Status.PLAYER1;
+                    if(contador%2==1){
+                        status=Status.PLAYER2;
+                    }
+                    if(humanTurn[contador%2]!=null){
+                        try {
+                            humanTurn[contador % 2].askPlay(status);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        try {
+                            turn[contador%2].askPlay(status);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    contador++;
                 }
-                contador++;
             }
         }).start();
     }

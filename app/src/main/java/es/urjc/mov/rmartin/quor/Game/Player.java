@@ -34,7 +34,10 @@ public abstract class Player {
 
     public abstract boolean isFreeBox(Box pressed,Status player);
 
-    public abstract Move askPlay(Box pressed,Status statusPlayer,Status statusOpposite, boolean checked);
+    public abstract Move askPlay(Status statusPlayer) throws InterruptedException;
 
     public abstract Move putPlay(Coordinate c, boolean checked);
+
+    public abstract boolean validMove(Move move, Status status);
+
 }

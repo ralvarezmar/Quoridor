@@ -3,8 +3,8 @@ package es.urjc.mov.rmartin.quor.Game;
 import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 
 public class Move {
-    Coordinate c;
-    Boolean type;
+    private Coordinate c;
+    private Boolean type;
     public Move(Coordinate c, Boolean type){
         this.c=c;
         this.type=type;

@@ -36,10 +36,10 @@ public class GameActivity extends AppCompatActivity {
     int ganadas=0;
     int player1;
     int player2;
+    int count=0;
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
-    int contador=0;
 
     private void paintAgain(){
         design(logic.board.getArrayStatus());
@@ -67,6 +67,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void restart(){
         logic = new Logic(FILAS,COLUMNAS);
+        count=0;
         setPlayer(player1,player2);
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
@@ -87,10 +88,14 @@ public class GameActivity extends AppCompatActivity {
             this.y= y;
         }
         public void onClick(View button){
-            //meter jugada se queda parado hasta que desde el onclick le paso esta jugada
+            int turno=count%2;
+            if(humanTurn[turno]==null){
+                System.out.print("NO ES TU TURNO");
+                return;
+            }
             Switch eleccion;
             Status player;
-            if(contador%2==1){
+            if(turno==1){
                 eleccion = (Switch) findViewById(R.id.eleccionbottom);
                 player=Status.PLAYER2;
             }else {
@@ -100,37 +105,26 @@ public class GameActivity extends AppCompatActivity {
             Coordinate c=new Coordinate(x,y);
             ////COMPROBAR SI M ES VALIDO
             Boolean check = eleccion.isChecked();
-            Box pressed;
-            Move m;
-            do{
-                m = humanTurn[contador % 2].putPlay(c,check);
-                Log.v("Jugador", m.getC() + " " + m.getType());
-            }while(!humanTurn[contador % 2].validMove(m,player));
-
-
-/*
-            Box pressed = logic.board.getPress(x,y);
-            if(turn[contador%2]==playerTop){
-                if(turn[contador%2].askPlay(pressed,Status.PLAYER1,Status.PLAYER2,eleccion.isChecked())){
-                    contador++;
-                }
+            Box pressed = logic.board.getPress(c);
+            Move move;
+            if(humanTurn[turno]==null){
+                Log.v("fallo","HUMANTURN ES NULL------------------------------------------------");
             }else{
-               // Switch eleccion=(Switch) findViewById(R.id.eleccionbottom);
-                if(turn[contador%2].askPlay(pressed,Status.PLAYER2,Status.PLAYER1,eleccion.isChecked())){
-                    contador++;
-                }
-            }*/
-            Box player1=logic.board.getPlayer(Status.PLAYER1);
-            Box player2=logic.board.getPlayer(Status.PLAYER2);
-            Coordinate cPlayer1=player1.getCoordenate();
-            Coordinate cPlayer2=player2.getCoordenate();
-
-            if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
-                restart();
-                paintAgain();
+                Log.v("fallo", "HUMANTURN: " + humanTurn[turno]+ "------------------------------");
             }
-            ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-            doBoard(statusArray);
+            do{
+                move=humanTurn[turno].putPlay(c,check);
+            }while(!((check && humanTurn[turno].isFreeBox(pressed,player)) || (!check && humanTurn[turno].canWall(pressed))));
+            if(move.getType()){
+                Box played=logic.board.getPlayer(player);
+                played.setStatus(Status.FREE);
+                pressed.setStatus(player);
+            }else if(!move.getType()){
+                pressed.setStatus(Status.WALL);
+            }
+
+            /*ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+            doBoard(statusArray);*/
             Log.v(TAG,"boton game");
         }
     }
@@ -283,7 +277,6 @@ public class GameActivity extends AppCompatActivity {
         turn[1]=playerBottom;
     }
 
-    //syncronize para pedir jugadas
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -305,25 +298,52 @@ public class GameActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             public void run(){
                 while (true) {
-                    Log.v("contador", "Numero: " + contador);
-                    Status status=Status.PLAYER1;
-                    if(contador%2==1){
-                        status=Status.PLAYER2;
-                    }
-                    if(humanTurn[contador%2]!=null){
-                        try {
-                            humanTurn[contador % 2].askPlay(status);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    synchronized (this){
+                        Log.v("contador", "Numero: " + count);
+                        Status status=Status.PLAYER1;
+                        if(count%2==1){
+                            status=Status.PLAYER2;
                         }
-                    }else{
-                        try {
-                            turn[contador%2].askPlay(status);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        if(humanTurn[count%2]!=null){
+                            try {
+                                humanTurn[count % 2].askPlay(status);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }else{
+                            try {
+                                Move move;
+                                do{
+                                    move = turn[count%2].askPlay(status);
+                                }while(move==null);
+                               /* if(move==null){
+                                    turn[count%2].askPlay(status);
+                                }*/
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        count++;
+
+                        runOnUiThread(new Runnable(){
+                            @Override
+                            public void run() {
+                                synchronized (this){
+                                    Box player1=logic.board.getPlayer(Status.PLAYER1);
+                                    Box player2=logic.board.getPlayer(Status.PLAYER2);
+                                    Coordinate cPlayer1=player1.getCoordenate();
+                                    Coordinate cPlayer2=player2.getCoordenate();
+
+                                    if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
+                                        restart();
+                                        paintAgain();
+                                    }
+                                    ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+                                    doBoard(statusArray);
+                                }
+                            }
+                        });
                     }
-                    contador++;
                 }
             }
         }).start();

@@ -9,7 +9,6 @@ import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
-import es.urjc.mov.rmartin.quor.R;
 
 
 public class IADijkstra extends Player {
@@ -59,9 +58,7 @@ public class IADijkstra extends Player {
                 move=getRandom(cpu);
                 return move;
             }
-            Log.v("veces",way.toString());
             move=way.get(way.size()-1);
-            //way.remove(way.size()-1);
             cpu.setStatus(Status.FREE);
         }
         move.setStatus(player);
@@ -89,11 +86,15 @@ public class IADijkstra extends Player {
     public synchronized Move askPlay(Status statusPlayer){
         int destinyPlayer;
         int destinyOpposite;
+        Status statusOpposite;
         if(statusPlayer==Status.PLAYER1){
             destinyPlayer=b.game.length-1;
+            statusOpposite=Status.PLAYER2;
             destinyOpposite=0;
         }else{
             destinyPlayer=0;
+            statusOpposite=Status.PLAYER1;
+
             destinyOpposite=b.game.length-1;
         }
         int move = (int) (Math.random() * 100);
@@ -102,10 +103,13 @@ public class IADijkstra extends Player {
             Move m=new Move(b.getCoordenate(),true);
             return m;
         }
-        Box b= putWall(destinyOpposite,Status.PLAYER2);
-        Move m=new Move(b.getCoordenate(),false);
-        return m;
-        //DEVUELVE TIPO JUGADA Y EN EL GAMEACTIVITY CAMBIO LOS ESTADOS DESPUES DE COMPROBAR QUE LA JUGADA SEA VALIDA
+        Box b= putWall(destinyOpposite,statusOpposite);
+        if(b!=null){
+            Move m=new Move(b.getCoordenate(),false);
+            return m;
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -114,7 +118,7 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public boolean validMove(Move move, Status status) {
+    public boolean canWall(Box pressed) {
         return false;
     }
 

@@ -38,6 +38,5 @@ public abstract class Player {
 
     public abstract Move putPlay(Coordinate c, boolean checked);
 
-    public abstract boolean validMove(Move move, Status status);
-
+    public abstract boolean canWall(Box pressed);
 }

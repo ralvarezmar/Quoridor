@@ -24,6 +24,15 @@ public class Box {
         return status;
     }
 
+    @Override
+    public String toString() {
+        return "Box{" +
+                "c=" + c +
+                ", id=" + id +
+                ", status=" + status +
+                '}';
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }

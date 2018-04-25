@@ -78,7 +78,7 @@ public class IARandom extends Player {
     }
 
     @Override
-    public boolean validMove(Move move, Status status) {
+    public boolean canWall(Box pressed) {
         return false;
     }
 

@@ -94,9 +94,10 @@ public class IAMedium extends Player {
     }
 
     @Override
-    public boolean validMove(Move move, Status status) {
+    public boolean canWall(Box pressed) {
         return false;
     }
+
 
     @Override
     public boolean isFreeBox(Box pressed,Status player) {

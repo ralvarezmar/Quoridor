@@ -18,41 +18,26 @@ public class Human extends Player {
     private static final Object monitor = new Object();
 
 
-    @Override
-    public boolean isFreeBox(Box pressed,Status player){
-        //Box b=board.getPlayer(player);
-       return isMoveValid(pressed, player);
-       /*     pressed.setStatus(player);
-            b.setStatus(Status.FREE);
-            return true;
-        }
-        return false;*/
-    }
-
     private boolean checkWall(Box player1,Box player2){
         Dijkstra play1 = new Dijkstra(board,player1);
         ArrayList wayPlayer1 = play1.doWay(0);
         Dijkstra play2 = new Dijkstra(board,player2);
         ArrayList wayPlayer2 = play2.doWay(board.game.length-1);
-        if(wayPlayer1.size()==0 || wayPlayer2.size()==0){
+        if(wayPlayer1.size()<=1 || wayPlayer2.size()<=1){
             return false;
         }
         return true;
     }
-    @Override
-    public boolean canWall(Box pressed){
-        Box player1=board.getPlayer(Status.PLAYER1);
-        Box player2=board.getPlayer(Status.PLAYER2);
-        return checkWall(player1,player2) && pressed.getStatus()==Status.FREE;
-    }
 
     @Override
-    public synchronized Move askPlay(Status statusPlayer) throws InterruptedException {
+    public Move askPlay(Status statusPlayer) throws InterruptedException {
+        Log.v("askPlay","Duerme humano");
         synchronized (monitor){
             monitor.wait();
         }
         return null;
     }
+
 
     public boolean validMove(Move m, Status status){
         Box player1=b.getPlayer(Status.PLAYER1);
@@ -60,20 +45,22 @@ public class Human extends Player {
         Coordinate c= m.getC();
         Box pressed=b.getPress(c);
         if(!m.getType() && checkWall(player1,player2)){
+           // pressed.setStatus(Status.WALL);
             return true;
-        }if(m.getType() && isFreeBox(pressed,status)){
+        }else if(m.getType() && isMoveValid(pressed,status)){
+            //pressed.setStatus(status);
+            //b.getPlayer(status).setStatus(Status.FREE);
             return true;
         }
         return false;
     }
 
     @Override
-    public  Move putPlay(Coordinate c, boolean checked) {
+    public Move putPlay(Coordinate c, boolean checked) {
         //Log.v("Thread", "Pido jugada");
         synchronized (monitor){
             monitor.notify();
         }
-        //monitor.notifyAll();
         Move move = new Move(c,checked);
         return move;
     }
@@ -88,9 +75,3 @@ public class Human extends Player {
         return null;
     }
 }
-
-/*
-Tu desde el hilo que lanzas pides jugada da igual el que sea
-Si es un humano el pedir jugada se va a quedar dormido hasta que se la rellenes con el meter jugada que lo despierta, que eso lo haces desde el onClick
-Y si es ia pues rellena la jugada como siempre
- */

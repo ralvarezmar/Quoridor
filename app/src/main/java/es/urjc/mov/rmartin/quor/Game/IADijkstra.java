@@ -18,7 +18,7 @@ public class IADijkstra extends Player {
         this.b=b;}
     private static final int PORCENTAJE = 20;
 
-    private Box getRandom(Box cpu){
+    private Box getRandom(Box cpu,Status status){
         Box move;
         Random rand = new Random();
         int casillaX;
@@ -34,9 +34,9 @@ public class IADijkstra extends Player {
                     move = b.getPress(cpu.getCoordenate().getX(), Math.abs(casillaY + cpu.getCoordenate().getY()));
                 }
             }
-            cpu.setStatus(Status.FREE);
+            //cpu.setStatus(Status.FREE);
         }while (!boxOk(move));
-        move.setStatus(Status.PLAYER1);
+        //move.setStatus(status);
         return move;
     }
 
@@ -44,24 +44,16 @@ public class IADijkstra extends Player {
     public Box getMove(int destiny,Status player){
         Box cpu=b.getPlayer(player);
         Box move;
-        int casillaY;
-        if(cpu==null) { //primer movimiento
-           // Log.v("veces","random");
-            do {
-                casillaY = (int) (Math.random() * b.game[0].length);
-                move = b.getPress(0, casillaY);
-            }while(move.getStatus()!=Status.FREE);
-        }else{
-            Dijkstra dijkstra=new Dijkstra(b,cpu);
-            ArrayList<Box> way = dijkstra.doWay(destiny);
-            if(way.size()==0){
-                move=getRandom(cpu);
-                return move;
-            }
-            move=way.get(way.size()-1);
-            cpu.setStatus(Status.FREE);
+        Dijkstra dijkstra=new Dijkstra(b,cpu);
+        ArrayList<Box> way = dijkstra.doWay(destiny);
+        if(way.size()==0){
+            move=getRandom(cpu,player);
+            return move;
         }
-        move.setStatus(player);
+        move=way.get(way.size()-1);
+        //cpu.setStatus(Status.FREE);
+
+        //move.setStatus(player);
         return move;
     }
 
@@ -77,13 +69,15 @@ public class IADijkstra extends Player {
         way = dijkstra1.doWay(destiny);
         if(way.size()==0) {
             wall.setStatus(Status.FREE);
-            wall=null;
+            return null;
         }
+        wall.setStatus(Status.FREE);
         return wall;
     }
 
     @Override
-    public synchronized Move askPlay(Status statusPlayer){
+    public Move askPlay(Status statusPlayer){
+        Log.v("askPlay","Calculo jugada IA");
         int destinyPlayer;
         int destinyOpposite;
         Status statusOpposite;
@@ -94,22 +88,22 @@ public class IADijkstra extends Player {
         }else{
             destinyPlayer=0;
             statusOpposite=Status.PLAYER1;
-
             destinyOpposite=b.game.length-1;
         }
         int move = (int) (Math.random() * 100);
         if (move > PORCENTAJE){
+            Log.v("askPlay","Movimiento");
             Box b= getMove(destinyPlayer, statusPlayer);
             Move m=new Move(b.getCoordenate(),true);
             return m;
         }
+        Log.v("askPlay","Muro");
         Box b= putWall(destinyOpposite,statusOpposite);
         if(b!=null){
             Move m=new Move(b.getCoordenate(),false);
             return m;
-        }else{
-            return null;
         }
+        return null;
     }
 
     @Override
@@ -118,12 +112,7 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public boolean canWall(Box pressed) {
-        return false;
-    }
-
-    @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean validMove(Move m, Status status) {
         return false;
     }
 

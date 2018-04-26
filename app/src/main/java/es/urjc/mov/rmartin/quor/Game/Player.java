@@ -24,7 +24,7 @@ public abstract class Player {
     boolean isMoveValid(Box pressed, Status player){
         Box b=board.getPlayer(player);
         ArrayList<Box> aroundBoxes= board.aroundBoxes(b);
-        return (b!= null && pressed.getStatus()==Status.FREE && aroundBoxes.contains(pressed));
+        return (pressed.getStatus()==Status.FREE && aroundBoxes.contains(pressed));
     }
 
 
@@ -32,11 +32,11 @@ public abstract class Player {
 
     public abstract Box putWall(int destiny,Status play);
 
-    public abstract boolean isFreeBox(Box pressed,Status player);
-
     public abstract Move askPlay(Status statusPlayer) throws InterruptedException;
 
     public abstract Move putPlay(Coordinate c, boolean checked);
 
-    public abstract boolean canWall(Box pressed);
+    //public abstract boolean canWall(Box pressed);
+
+    public abstract boolean validMove(Move m, Status status);
 }

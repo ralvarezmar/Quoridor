@@ -11,6 +11,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
+import java.util.Date;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
 import es.urjc.mov.rmartin.quor.Game.Level;
@@ -29,6 +30,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
+    static final int SLEEP=2000;
     Logic logic;
     Player playerTop;
     Player playerBottom;
@@ -48,6 +50,9 @@ public class GameActivity extends AppCompatActivity {
         String s= getResources().getString(R.string.jugadas);
         s= s+jugadas;
         text.setText(s);
+        Box player1=logic.board.getPlayer(Status.PLAYER1);
+        Box player2=logic.board.getPlayer(Status.PLAYER2);
+        runThread(player1,player2);
     }
 
     private Player selectLevel(Player player){
@@ -67,6 +72,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void restart(){
         logic = new Logic(FILAS,COLUMNAS);
+        Thread.currentThread().interrupt();
         count=0;
         setPlayer(player1,player2);
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
@@ -103,25 +109,14 @@ public class GameActivity extends AppCompatActivity {
                 player=Status.PLAYER1;
             }
             Coordinate c=new Coordinate(x,y);
-            ////COMPROBAR SI M ES VALIDO
             Boolean check = eleccion.isChecked();
-            Box pressed = logic.board.getPress(c);
             Move move;
-            if(humanTurn[turno]==null){
-                Log.v("fallo","HUMANTURN ES NULL------------------------------------------------");
-            }else{
-                Log.v("fallo", "HUMANTURN: " + humanTurn[turno]+ "------------------------------");
-            }
-            do{
-                move=humanTurn[turno].putPlay(c,check);
-            }while(!((check && humanTurn[turno].isFreeBox(pressed,player)) || (!check && humanTurn[turno].canWall(pressed))));
-            if(move.getType()){
-                Box played=logic.board.getPlayer(player);
-                played.setStatus(Status.FREE);
-                pressed.setStatus(player);
-            }else if(!move.getType()){
-                pressed.setStatus(Status.WALL);
-            }
+            do {
+                move = humanTurn[turno].putPlay(c, check);
+                Log.v("Ciclo: ", check + " " + c + " funcion:" + humanTurn[turno].validMove(move,player));
+            }while(!humanTurn[turno].validMove(move,player));
+            changeStatus(move,player);
+                //}while(!(check && humanTurn[turno].isFreeBox(pressed,player)) || !(!check && humanTurn[turno].canWall(pressed)))
 
             /*ArrayList<Integer> statusArray = logic.board.getArrayStatus();
             doBoard(statusArray);*/
@@ -233,7 +228,6 @@ public class GameActivity extends AppCompatActivity {
         player1= configuration.getInt("player1");
         player2= configuration.getInt("player2");
         String user= configuration.getString("user");
-        Log.v("RECUPERANDO: ", player1 + " " + player2 + " " + user);
     }
 
     private void setPlayer(int player1,int player2){
@@ -291,64 +285,89 @@ public class GameActivity extends AppCompatActivity {
             recuperateStatus(savedInstanceState);
             setPlayer(player1,player2);
             return;
+        }else{
+            setPlayer(player1,player2);
         }
-        setPlayer(player1,player2);
+        Box player1=logic.board.getPlayer(Status.PLAYER1);
+        Box player2=logic.board.getPlayer(Status.PLAYER2);
         design(statusArray);
-        Log.v(TAG, "On create");
+        runThread(player1,player2);
+    }
+
+    private  void runThread(final Box player1, final Box player2){
         new Thread(new Runnable() {
             public void run(){
                 while (true) {
                     synchronized (this){
-                        Log.v("contador", "Numero: " + count);
-                        Status status=Status.PLAYER1;
-                        if(count%2==1){
-                            status=Status.PLAYER2;
+                        int turno=count%turn.length;
+                        Log.v("contador", "Numero: " + count + " Turno: " + turno);
+                        Status player;
+                        if(turno==1){
+                            player=Status.PLAYER2;
+                        }else{
+                            player=Status.PLAYER1;
                         }
-                        if(humanTurn[count%2]!=null){
+                        if(humanTurn[turno]!=null){
                             try {
-                                humanTurn[count % 2].askPlay(status);
+                                turn[turno].askPlay(player);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }else{
                             try {
+                                Date initDate = new Date();
+                                Log.v("tiempo", "hora: " + initDate.getTime());
                                 Move move;
                                 do{
-                                    move = turn[count%2].askPlay(status);
+                                    move = turn[turno].askPlay(player);
+                                    Log.v("turno", "IA: " + move);
                                 }while(move==null);
-                               /* if(move==null){
-                                    turn[count%2].askPlay(status);
-                                }*/
+                                changeStatus(move,player);
+                                Thread.sleep(SLEEP);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
                         count++;
-
+                    }
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run() {
+                            ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+                            Log.v("Array", "Estados: " + statusArray);
+                            doBoard(statusArray);
+                        }
+                    });
+/*
+                    Coordinate cPlayer1=player1.getCoordenate();
+                    Coordinate cPlayer2=player2.getCoordenate();
+                    if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
                         runOnUiThread(new Runnable(){
                             @Override
                             public void run() {
-                                synchronized (this){
-                                    Box player1=logic.board.getPlayer(Status.PLAYER1);
-                                    Box player2=logic.board.getPlayer(Status.PLAYER2);
-                                    Coordinate cPlayer1=player1.getCoordenate();
-                                    Coordinate cPlayer2=player2.getCoordenate();
-
-                                    if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
-                                        restart();
-                                        paintAgain();
-                                    }
-                                    ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                                    doBoard(statusArray);
-                                }
+                                restart();
+                                paintAgain();
                             }
                         });
-                    }
+                    }*/
+
                 }
             }
         }).start();
     }
 
+    private void changeStatus(Move move,Status player){
+        Box boxNow = logic.board.getPlayer(player);
+        Box boxFuture = logic.board.getPress(move.getC());
+        if(move.getType()){
+            boxNow.setStatus(Status.FREE);
+            boxFuture.setStatus(player);
+            Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
+        }else{
+            boxFuture.setStatus(Status.WALL);
+            Log.v("Muro","Nueva casilla: " + boxFuture );
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();

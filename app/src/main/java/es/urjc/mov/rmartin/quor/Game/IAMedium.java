@@ -83,7 +83,7 @@ public class IAMedium extends Player {
             Move m=new Move(casilla.getCoordenate(),true);
             return m;
         }
-       Box casilla= putWall(destinyOpposite,Status.PLAYER2);
+        Box casilla= putWall(destinyOpposite,Status.PLAYER2);
         Move m=new Move(casilla.getCoordenate(),false);
         return m;
     }
@@ -94,13 +94,7 @@ public class IAMedium extends Player {
     }
 
     @Override
-    public boolean canWall(Box pressed) {
-        return false;
-    }
-
-
-    @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean validMove(Move m, Status status) {
         return false;
     }
 

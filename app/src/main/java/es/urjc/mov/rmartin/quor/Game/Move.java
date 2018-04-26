@@ -10,6 +10,14 @@ public class Move {
         this.type=type;
     }
 
+    @Override
+    public String toString() {
+        return "Move{" +
+                "c=" + c +
+                ", type=" + type +
+                '}';
+    }
+
     public Coordinate getC() {
         return c;
     }

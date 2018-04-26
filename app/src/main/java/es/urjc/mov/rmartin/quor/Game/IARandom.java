@@ -78,12 +78,7 @@ public class IARandom extends Player {
     }
 
     @Override
-    public boolean canWall(Box pressed) {
-        return false;
-    }
-
-    @Override
-    public boolean isFreeBox(Box pressed,Status player) {
+    public boolean validMove(Move m, Status status) {
         return false;
     }
 

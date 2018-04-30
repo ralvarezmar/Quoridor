@@ -56,13 +56,11 @@ public class Human extends Player {
     }
 
     @Override
-    public Move putPlay(Coordinate c, boolean checked) {
+    public void putPlay(Move move) {
         //Log.v("Thread", "Pido jugada");
         synchronized (monitor){
             monitor.notify();
         }
-        Move move = new Move(c,checked);
-        return move;
     }
 
     @Override

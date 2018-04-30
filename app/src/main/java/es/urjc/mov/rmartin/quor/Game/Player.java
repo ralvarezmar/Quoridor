@@ -34,7 +34,7 @@ public abstract class Player {
 
     public abstract Move askPlay(Status statusPlayer) throws InterruptedException;
 
-    public abstract Move putPlay(Coordinate c, boolean checked);
+    public abstract void putPlay(Move move);
 
     //public abstract boolean canWall(Box pressed);
 

@@ -1,5 +1,4 @@
 package es.urjc.mov.rmartin.quor;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,16 +20,16 @@ import es.urjc.mov.rmartin.quor.Game.Player;
 import es.urjc.mov.rmartin.quor.Game.IAMedium;
 import es.urjc.mov.rmartin.quor.Game.IARandom;
 import es.urjc.mov.rmartin.quor.Game.PlayerMode;
+import es.urjc.mov.rmartin.quor.Game.Remote;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public class GameActivity extends AppCompatActivity {
-    private static String TAG="PRUEBA";
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=2000;
+    static final int SLEEP=1000;
     Logic logic;
     Player playerTop;
     Player playerBottom;
@@ -42,17 +41,18 @@ public class GameActivity extends AppCompatActivity {
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
+    boolean finish = true;
+
 
     private void paintAgain(){
+        finish=true;
         design(logic.board.getArrayStatus());
         jugadas++;
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
         s= s+jugadas;
         text.setText(s);
-        Box player1=logic.board.getPlayer(Status.PLAYER1);
-        Box player2=logic.board.getPlayer(Status.PLAYER2);
-        runThread(player1,player2);
+        runThread();
     }
 
     private Player selectLevel(Player player){
@@ -120,7 +120,6 @@ public class GameActivity extends AppCompatActivity {
 
             /*ArrayList<Integer> statusArray = logic.board.getArrayStatus();
             doBoard(statusArray);*/
-            Log.v(TAG,"boton game");
         }
     }
 
@@ -266,6 +265,7 @@ public class GameActivity extends AppCompatActivity {
                 playerBottom=selectLevel(playerBottom);
                 break;
             case REMOTE:
+                playerBottom= new Remote(logic.board);
                 break;
         }
         turn[1]=playerBottom;
@@ -291,105 +291,104 @@ public class GameActivity extends AppCompatActivity {
         Box player1=logic.board.getPlayer(Status.PLAYER1);
         Box player2=logic.board.getPlayer(Status.PLAYER2);
         design(statusArray);
-        runThread(player1,player2);
+        runThread();
     }
 
-    private  void runThread(final Box player1, final Box player2){
+    private void runThread(){
         new Thread(new Runnable() {
-            public void run(){
-                while (true) {
-                    synchronized (this){
-                        int turno=count%turn.length;
-                        Log.v("contador", "Numero: " + count + " Turno: " + turno);
-                        Status player;
-                        if(turno==1){
-                            player=Status.PLAYER2;
-                        }else{
-                            player=Status.PLAYER1;
-                        }
-                        if(humanTurn[turno]!=null){
-                            try {
-                                turn[turno].askPlay(player);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }else{
-                            try {
-                                Date initDate = new Date();
-                                Log.v("tiempo", "hora: " + initDate.getTime());
-                                Move move;
-                                do{
-                                    move = turn[turno].askPlay(player);
-                                    Log.v("turno", "IA: " + move);
-                                }while(move==null);
-                                changeStatus(move,player);
-                                Thread.sleep(SLEEP);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        count++;
-                    }
-                    runOnUiThread(new Runnable(){
-                        @Override
-                        public void run() {
-                            ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                            Log.v("Array", "Estados: " + statusArray);
-                            doBoard(statusArray);
-                        }
-                    });
-/*
-                    Coordinate cPlayer1=player1.getCoordenate();
-                    Coordinate cPlayer2=player2.getCoordenate();
-                    if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
-                        runOnUiThread(new Runnable(){
-                            @Override
-                            public void run() {
-                                restart();
-                                paintAgain();
-                            }
-                        });
-                    }*/
-
+        public void run(){
+            while (finish) {
+                int turno;
+                synchronized (this) {
+                    turno = count % turn.length;
                 }
+                Log.v("contador", "Numero: " + count + " Turno: " + turno);
+                Status player;
+                if(turno==1){
+                    player=Status.PLAYER2;
+                }else{
+                    player=Status.PLAYER1;
+                }
+                 if(humanTurn[turno]!=null){
+                    try {
+                        turn[turno].askPlay(player);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    try {
+                        Move move;
+                        do {
+                            move = turn[turno].askPlay(player);
+                        }while(move==null);
+                        Log.v("turno", "IA: " + move);
+                        changeStatus(move,player);
+                        Thread.sleep(SLEEP);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                synchronized (this){
+                    count++;
+                }
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+                        //printBoard(statusArray);
+                        doBoard(statusArray);
+                    }
+                });
             }
+        }
         }).start();
     }
 
+
+
     private void changeStatus(Move move,Status player){
+        Log.v("Movimiento", "Jugada: " + move);
         Box boxNow = logic.board.getPlayer(player);
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){
-            boxNow.setStatus(Status.FREE);
             boxFuture.setStatus(player);
+            boxNow.setStatus(Status.FREE);
             Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
         }else{
             boxFuture.setStatus(Status.WALL);
             Log.v("Muro","Nueva casilla: " + boxFuture );
         }
     }
+
+    private void printBoard(ArrayList statusArray){
+        int count=0;
+        for(int i = 0; i < logic.board.game.length; i++) {
+            for(int j= 0;j < logic.board.game[i].length;j++) {
+               System.out.print(statusArray.get(count));
+               System.out.print(" ");
+            }
+            System.out.println(" ");
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
-        Log.v(TAG, "On start");
     }
     @Override
     protected void onPause(){
         super.onPause();
-        Log.v(TAG,"On pause");
     }
     @Override
     protected void onResume(){
         super.onResume();
-        Log.v(TAG,"on Resume");
     }
     @Override
     protected void onDestroy(){
+        finish=false;
         super.onDestroy();
-        Log.v(TAG,"on Destroy");
     }
 
-    //SALVAR ESTADO
     @Override
     public void onSaveInstanceState(Bundle state){
         ArrayList<Integer> statusBoard = logic.board.getArrayStatus();

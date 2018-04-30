@@ -73,8 +73,8 @@ public class IARandom extends Player {
     }
 
     @Override
-    public Move putPlay(Coordinate c, boolean checked) {
-        return null;
+    public void putPlay(Move move) {
+
     }
 
     @Override

@@ -107,9 +107,10 @@ public class IADijkstra extends Player {
     }
 
     @Override
-    public Move putPlay(Coordinate c, boolean checked) {
-        return null;
+    public void putPlay(Move move) {
+
     }
+
 
     @Override
     public boolean validMove(Move m, Status status) {

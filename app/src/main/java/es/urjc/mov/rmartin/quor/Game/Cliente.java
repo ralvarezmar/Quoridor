@@ -25,9 +25,8 @@ public class Cliente {
 
                     //o = s.getOutputStream();
                     Coordinate c= new Coordinate(3,4);
-                    Box b = new Box(c,34, Status.FREE);
-                    System.out.println(b);
-                    o.writeObject(b);
+                    Move m = new Move(c,true);
+                    o.writeObject(m);
                     //byte buf[] = "ENTRAAAA".getBytes("UTF-8");
                     //o.write(buf, 0, buf.length);
                 } catch (ConnectException e) {

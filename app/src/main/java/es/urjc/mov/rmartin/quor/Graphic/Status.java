@@ -1,9 +1,8 @@
 package es.urjc.mov.rmartin.quor.Graphic;
 
-/**
- * Created by ruben on 13/04/18.
- */
+import java.io.Serializable;
 
-public enum Status {
+
+public enum Status implements Serializable {
     FREE,WALL,PLAYER1,PLAYER2
 }

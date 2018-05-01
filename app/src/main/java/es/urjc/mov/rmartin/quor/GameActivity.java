@@ -11,6 +11,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Date;
+
+import es.urjc.mov.rmartin.quor.Game.Cliente;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
 import es.urjc.mov.rmartin.quor.Game.Level;
@@ -110,9 +112,9 @@ public class GameActivity extends AppCompatActivity {
             }
             Coordinate c=new Coordinate(x,y);
             Boolean check = eleccion.isChecked();
-            Move move;
+            Move move=new Move(c,check);
             do {
-                move = humanTurn[turno].putPlay(c, check);
+                humanTurn[turno].putPlay(move);
                 Log.v("Ciclo: ", check + " " + c + " funcion:" + humanTurn[turno].validMove(move,player));
             }while(!humanTurn[turno].validMove(move,player));
             changeStatus(move,player);
@@ -265,7 +267,9 @@ public class GameActivity extends AppCompatActivity {
                 playerBottom=selectLevel(playerBottom);
                 break;
             case REMOTE:
-                playerBottom= new Remote(logic.board);
+                Cliente pepe = new Cliente();
+                pepe.conexion();
+                //playerBottom= new Remote(logic.board);
                 break;
         }
         turn[1]=playerBottom;
@@ -319,8 +323,12 @@ public class GameActivity extends AppCompatActivity {
                     try {
                         Move move;
                         do {
+
                             move = turn[turno].askPlay(player);
                         }while(move==null);
+                        //Coordinate c=new Coordinate(3,4);
+                        //move=new Move(c,true);
+                        turn[turno].putPlay(move);
                         Log.v("turno", "IA: " + move);
                         changeStatus(move,player);
                         Thread.sleep(SLEEP);

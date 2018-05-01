@@ -11,7 +11,6 @@ import java.net.UnknownHostException;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
-import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 
@@ -19,6 +18,7 @@ public class Remote extends Player{
     public Remote(Board board) {
         super(board);
     }
+
     public void conecting(final String name) {
         Thread c = new Thread() {
             @Override

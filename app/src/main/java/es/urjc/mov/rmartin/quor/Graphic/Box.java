@@ -1,12 +1,14 @@
 package es.urjc.mov.rmartin.quor.Graphic;
 
-public class Box {
+import java.io.Serializable;
+
+public class Box implements Serializable{
 
     private Coordinate c;
     private int id;
     private Status status;
 
-    Box(Coordinate c,int id,Status status){
+    public Box(Coordinate c, int id, Status status){
         this.c=c;
         this.id=id;
         this.status=status;

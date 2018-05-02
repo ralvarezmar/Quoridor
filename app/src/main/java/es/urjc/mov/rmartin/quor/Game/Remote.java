@@ -1,5 +1,7 @@
 package es.urjc.mov.rmartin.quor.Game;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
@@ -15,59 +17,65 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 
 public class Remote extends Player{
-    public Remote(Board board) {
+    public Remote(Board board,String nick) {
         super(board);
+        conect(nick);
     }
 
-    public void conecting(final String name) {
-        Thread c = new Thread() {
+    public void conect(final String nick) {
+        final Thread c = new Thread() {
             @Override
             public void run() {
-                Socket s;
+                Socket s=null;
+                //ObjectOutputStream o;
                 OutputStream o;
+                ObjectInputStream out;
                 o = null;
                 try {
-                    s = new Socket("10.0.2.1", 8080);
+                    s = new Socket("10.0.2.2", 2020);
                     o = s.getOutputStream();
-                    ObjectOutputStream clientOutputStream = new
-                            ObjectOutputStream(s.getOutputStream());
-                    ObjectInputStream clientInputStream = new
-                            ObjectInputStream(s.getInputStream());
-
-                    byte buf[] = name.getBytes();
+                    byte buf[] = nick.getBytes();
                     o.write(buf, 0, buf.length);
-
+                    //o = new ObjectOutputStream(s.getOutputStream());
+                    //Coordinate c= new Coordinate(3,4);
+                    //Move m = new Move(c,true);
+                    // o.writeObject(m);
                 } catch (ConnectException e) {
-                    System.out.print("connection refused " + e);
+                    System.out.println("connection refused" + e);
                 } catch (UnknownHostException e) {
-                    System.out.print("cannot connnect " + e);
+                    System.out.println("cannot connect to host " + e);
                 } catch (IOException e) {
-                    System.out.print("IO exception" + e);
+                    System.out.println("IO exception" + e);
                 } finally {
                     if (o != null) {
                         try {
                             o.close();
+                            s.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 }
+                try {
+                    s.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         };
         c.start();
     }
+
     @Override
     public Move askPlay(Status statusPlayer) throws InterruptedException {
-        Socket s;
+        Socket s = null;
         ObjectInputStream o;
         Move move = null;
         o = null;
         try {
-            s = new Socket("10.0.2.2", 8080);
+            s = new Socket("10.0.2.2", 2020);
              o = new ObjectInputStream(s.getInputStream());
             move = (Move) o.readObject();
-            //byte buf[] = name.getBytes();
-            //o.write(buf, 0, buf.length);
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);
         } catch (UnknownHostException e) {
@@ -80,6 +88,7 @@ public class Remote extends Player{
             if(o!=null){
                 try {
                     o.close();
+                    s.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -90,12 +99,13 @@ public class Remote extends Player{
 
     @Override
     public void putPlay(Move move) {
-        Socket s;
+        Socket s = null;
         ObjectOutputStream o;
         o = null;
         try {
-            s = new Socket("10.0.2.2", 8080);
+            s = new Socket("10.0.2.2", 2020);
             o = new ObjectOutputStream(s.getOutputStream());
+            Log.v("Remoto", "Mando: " + move);
             o.writeObject(move);
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);
@@ -107,6 +117,7 @@ public class Remote extends Player{
             if(o!=null){
                 try {
                     o.close();
+                    s.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -123,8 +134,6 @@ public class Remote extends Player{
     public Box putWall(int destiny, Status play) {
         return null;
     }
-
-
 
     @Override
     public boolean validMove(Move m, Status status) {

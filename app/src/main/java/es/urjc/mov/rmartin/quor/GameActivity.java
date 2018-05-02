@@ -1,7 +1,6 @@
 package es.urjc.mov.rmartin.quor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
-import es.urjc.mov.rmartin.quor.Game.Cliente;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
 import es.urjc.mov.rmartin.quor.Game.Level;
@@ -42,6 +40,9 @@ public class GameActivity extends AppCompatActivity {
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
+    Player remoteTurn[];
+
+    String user;
     boolean finish = true;
 
 
@@ -114,10 +115,12 @@ public class GameActivity extends AppCompatActivity {
             Move move=new Move(c,check);
             do {
                 humanTurn[turno].putPlay(move);
-                Log.v("Ciclo: ", check + " " + c + " funcion:" + humanTurn[turno].validMove(move,player));
             }while(!humanTurn[turno].validMove(move,player));
             changeStatus(move,player);
-                //}while(!(check && humanTurn[turno].isFreeBox(pressed,player)) || !(!check && humanTurn[turno].canWall(pressed)))
+            if(remoteTurn[(turno+1)%2]!=null){
+                Log.v("remoto", "entro en if de mandar");
+                turn[(turno+1)%2].putPlay(move);
+            }
 
             /*ArrayList<Integer> statusArray = logic.board.getArrayStatus();
             doBoard(statusArray);*/
@@ -227,12 +230,13 @@ public class GameActivity extends AppCompatActivity {
     private void setConfiguration(Bundle configuration){
         player1= configuration.getInt("player1");
         player2= configuration.getInt("player2");
-        String user= configuration.getString("user");
+        user= configuration.getString("user");
     }
 
     private void setPlayer(int player1,int player2){
         turn=new Player[2];
         humanTurn=new Human[2];
+        remoteTurn=new Remote[2];
         switch (PlayerMode.getVal(player1)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
@@ -248,6 +252,8 @@ public class GameActivity extends AppCompatActivity {
                 playerTop=selectLevel(playerTop);
                 break;
             case REMOTE:
+                playerTop=new Remote(logic.board,user);
+                remoteTurn[0]=playerTop;
                 break;
         }
         turn[0]=playerTop;
@@ -266,9 +272,8 @@ public class GameActivity extends AppCompatActivity {
                 playerBottom=selectLevel(playerBottom);
                 break;
             case REMOTE:
-                Cliente pepe = new Cliente();
-                pepe.conexion();
-                //playerBottom= new Remote(logic.board);
+                playerBottom=new Remote(logic.board,user);
+                remoteTurn[1]=playerBottom;
                 break;
         }
         turn[1]=playerBottom;
@@ -291,14 +296,11 @@ public class GameActivity extends AppCompatActivity {
         }else{
             setPlayer(player1,player2);
         }
-        Box player1=logic.board.getPlayer(Status.PLAYER1);
-        Box player2=logic.board.getPlayer(Status.PLAYER2);
         design(statusArray);
         runThread();
     }
 
     private void runThread(){
-        final Handler mHandler = new Handler();
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
@@ -325,9 +327,9 @@ public class GameActivity extends AppCompatActivity {
                         do {
                             move = turn[turno].askPlay(player);
                         }while(move==null);
-                        //Coordinate c=new Coordinate(3,4);
-                        //move=new Move(c,true);
-                        turn[turno].putPlay(move);
+                        if(remoteTurn[(turno+1)%2]!=null){
+                            turn[(turno+1)%2].putPlay(move);
+                        }
                         Log.v("turno", "IA: " + move);
                         changeStatus(move,player);
                     } catch (InterruptedException e) {
@@ -363,18 +365,16 @@ public class GameActivity extends AppCompatActivity {
         }).start();
     }
 
-
-
     private void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){
             Box boxNow = logic.board.getPlayer(player);
             boxFuture.setStatus(player);
             boxNow.setStatus(Status.FREE);
-            Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
+            //Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
         }else{
             boxFuture.setStatus(Status.WALL);
-            Log.v("Muro","Nueva casilla: " + boxFuture );
+            //Log.v("Muro","Nueva casilla: " + boxFuture );
         }
     }
 

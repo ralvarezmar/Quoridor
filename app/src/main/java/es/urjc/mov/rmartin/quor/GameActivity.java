@@ -1,6 +1,7 @@
 package es.urjc.mov.rmartin.quor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,8 +11,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.Date;
-
 import es.urjc.mov.rmartin.quor.Game.Cliente;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
@@ -31,7 +30,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=1000;
+    static final int SLEEP=2000;
     Logic logic;
     Player playerTop;
     Player playerBottom;
@@ -299,13 +298,14 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void runThread(){
+        final Handler mHandler = new Handler();
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
                 int turno;
                 synchronized (this) {
                     turno = count % turn.length;
-                }
+                //}
                 Log.v("contador", "Numero: " + count + " Turno: " + turno);
                 Status player;
                 if(turno==1){
@@ -323,7 +323,6 @@ public class GameActivity extends AppCompatActivity {
                     try {
                         Move move;
                         do {
-
                             move = turn[turno].askPlay(player);
                         }while(move==null);
                         //Coordinate c=new Coordinate(3,4);
@@ -331,22 +330,34 @@ public class GameActivity extends AppCompatActivity {
                         turn[turno].putPlay(move);
                         Log.v("turno", "IA: " + move);
                         changeStatus(move,player);
-                        Thread.sleep(SLEEP);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
-                synchronized (this){
+               // synchronized (this){
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run() {
+                            ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+                            //printBoard(statusArray);
+                            doBoard(statusArray);
+                            Box player1 = logic.board.getPlayer(Status.PLAYER1);
+                            Box player2 = logic.board.getPlayer(Status.PLAYER2);
+                            Coordinate cPlayer1 = player1.getCoordenate();
+                            Coordinate cPlayer2 =  player2.getCoordenate();
+                            if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
+                                restart();
+                                paintAgain();
+                            }
+                        }
+                    });
+                    try {
+                        Thread.sleep(SLEEP);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     count++;
                 }
-                runOnUiThread(new Runnable(){
-                    @Override
-                    public void run() {
-                        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                        //printBoard(statusArray);
-                        doBoard(statusArray);
-                    }
-                });
             }
         }
         }).start();
@@ -355,10 +366,9 @@ public class GameActivity extends AppCompatActivity {
 
 
     private void changeStatus(Move move,Status player){
-        Log.v("Movimiento", "Jugada: " + move);
-        Box boxNow = logic.board.getPlayer(player);
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){
+            Box boxNow = logic.board.getPlayer(player);
             boxFuture.setStatus(player);
             boxNow.setStatus(Status.FREE);
             Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);

@@ -1,15 +1,14 @@
 package es.urjc.mov.rmartin.quor.Game;
 
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import es.urjc.mov.rmartin.quor.Graphic.Box;
 import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
-import es.urjc.mov.rmartin.quor.Graphic.Status;
-
 
 public class Cliente {
     public void conexion() {
@@ -18,6 +17,7 @@ public class Cliente {
             public void run() {
                 Socket s;
                 ObjectOutputStream o;
+                ObjectInputStream out;
                 o = null;
                 try {
                     s = new Socket("10.0.2.2", 2020);

@@ -29,6 +29,7 @@ public class GameActivity extends AppCompatActivity {
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
     static final int SLEEP=2000;
+    static final int MINSIZE=-15;
     Logic logic;
     Player playerTop;
     Player playerBottom;
@@ -41,9 +42,8 @@ public class GameActivity extends AppCompatActivity {
     Player turn[];
     Player humanTurn[];
     Player remoteTurn[];
-
     String user;
-    boolean finish = true;
+    volatile boolean finish = true;
 
 
     private void paintAgain(){
@@ -190,8 +190,8 @@ public class GameActivity extends AppCompatActivity {
             TableRow.LayoutParams lr = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                     TableRow.LayoutParams.WRAP_CONTENT);
             if(getResources().getConfiguration().orientation!=1) {
-                lr.bottomMargin = -15;
-                lr.topMargin = -15;
+                lr.bottomMargin = MINSIZE;
+                lr.topMargin = MINSIZE;
             }
             row.setLayoutParams(lr);
             tl.addView(row);
@@ -308,7 +308,7 @@ public class GameActivity extends AppCompatActivity {
                 synchronized (this) {
                     turno = count % turn.length;
                 //}
-                Log.v("contador", "Numero: " + count + " Turno: " + turno);
+                Log.v("turno", "Numero: " + count + " Turno: " + turno);
                 Status player;
                 if(turno==1){
                     player=Status.PLAYER2;

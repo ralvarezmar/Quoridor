@@ -93,46 +93,37 @@ public class Remote extends Player{
         }
         return move;
     }
+
+    //METODO A CLASE MENSAJE
     private void sendMove(Move m) throws IOException {
-        OutputStream input= s.getOutputStream();
-        DataOutputStream o=new DataOutputStream(input);
+        OutputStream output= s.getOutputStream();
+        DataOutputStream o=new DataOutputStream(output);
         try {
             byte buf[] = id.getBytes();
-            o.write(buf, 0, buf.length);
             int x= m.getC().getX();
             int y= m.getC().getY();
             Boolean type = m.getType();
+            o.write(buf, 0, buf.length);
             o.writeInt(x);
             o.writeInt(y);
             o.writeBoolean(type);
+            o.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
     @Override
     public void putPlay(Move move) {
         //ObjectOutputStream o;
-        OutputStream o;
-        o = null;
         try {
+            sendMove(move);
             //s = new Socket("10.0.2.2", 2020);
-
             /*o = new ObjectOutputStream(s.getOutputStream());
             Log.v("Remoto", "Mando: " + move);
             o.writeObject(move);*/
-        } finally {
-            if(o!=null){
-                try {
-                    o.close();
-                    //s.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

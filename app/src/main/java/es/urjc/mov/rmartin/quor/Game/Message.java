@@ -25,10 +25,10 @@ public abstract class Message {
             int msg_type = idata.readInt();
             switch(messages[msg_type]){
                 case LOGIN:
-                    message = new Tlogin(idata);
+                    //message = new Tlogin(idata);
                     break;
                 case MOVE:
-                    message = new Tplayer(idata);
+                   // message = new Tplayer(idata);
                     break;
                 case OK:
                     message = new OkMessage();
@@ -45,7 +45,6 @@ public abstract class Message {
         } catch (IOException e) {
             throw new RuntimeException("Msg: read:" + e);
         }
-        throw new RuntimeException("Msg: read: unknown messagge");
     }
 
     public static class ErrorMessage extends Message{

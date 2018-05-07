@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,10 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
             Editable edit = ed.getText();
             String s = edit.toString();
+            CheckBox rbcrear = (CheckBox) findViewById(R.id.crear);
+            CheckBox rbunir = (CheckBox) findViewById(R.id.unir);
+            int crear;
+            if(rbunir.isChecked()){
+                crear = 0;
+            }else if(rbcrear.isChecked() || rbcrear.isChecked() && rbunir.isChecked()){
+                crear=1;
+            }else{
+                crear=2;
+            }
             Intent game = new Intent(MainActivity.this,GameActivity.class);
             game.putExtra("player1",selected1);
             game.putExtra("player2",selected2);
             game.putExtra("user",s);
+            game.putExtra("crear",crear);
             //Bundle msg = new Bundle();
             startActivity(game);
         }
@@ -48,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         Button butStart = (Button) findViewById(R.id.start);
         EditText user = (EditText) findViewById(R.id.user);
         Button butHelp = (Button) findViewById(R.id.help);
+
 
         butStart.setOnClickListener(new Start(user));
         butHelp.setOnClickListener(new Help());

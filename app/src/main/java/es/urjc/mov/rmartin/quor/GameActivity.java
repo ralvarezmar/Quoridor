@@ -43,6 +43,7 @@ public class GameActivity extends AppCompatActivity {
     Player humanTurn[];
     Player remoteTurn[];
     String user;
+    int crear;
     volatile boolean finish = true;
 
 
@@ -227,10 +228,11 @@ public class GameActivity extends AppCompatActivity {
         text.setText(s);
     }
 
-    private void setConfiguration(Bundle configuration){
+    private int setConfiguration(Bundle configuration){
         player1= configuration.getInt("player1");
         player2= configuration.getInt("player2");
         user= configuration.getString("user");
+        return configuration.getInt("crear");
     }
 
     private void setPlayer(int player1,int player2){
@@ -286,7 +288,7 @@ public class GameActivity extends AppCompatActivity {
         Bundle configuration = getIntent().getExtras();
         logic = new Logic(FILAS,COLUMNAS);
         if(configuration!=null){
-            setConfiguration(configuration);
+            int crear = setConfiguration(configuration);
         }
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
@@ -297,6 +299,17 @@ public class GameActivity extends AppCompatActivity {
             setPlayer(player1,player2);
         }
         design(statusArray);
+        switch (crear){
+            case 0://unir
+                count=1;
+                break;
+            case 1://crear
+                count=0;
+                break;
+            case 2://nada
+                count=0;
+                break;
+        }
         runThread();
     }
 
@@ -307,7 +320,7 @@ public class GameActivity extends AppCompatActivity {
                 int turno;
                 synchronized (this) {
                     turno = count % turn.length;
-                //}
+                }
                 Log.v("turno", "Numero: " + count + " Turno: " + turno);
                 Status player;
                 if(turno==1){
@@ -336,28 +349,28 @@ public class GameActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-               // synchronized (this){
-                    runOnUiThread(new Runnable(){
-                        @Override
-                        public void run() {
-                            ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                            //printBoard(statusArray);
-                            doBoard(statusArray);
-                            Box player1 = logic.board.getPlayer(Status.PLAYER1);
-                            Box player2 = logic.board.getPlayer(Status.PLAYER2);
-                            Coordinate cPlayer1 = player1.getCoordenate();
-                            Coordinate cPlayer2 =  player2.getCoordenate();
-                            if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
-                                restart();
-                                paintAgain();
-                            }
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+                        //printBoard(statusArray);
+                        doBoard(statusArray);
+                        Box player1 = logic.board.getPlayer(Status.PLAYER1);
+                        Box player2 = logic.board.getPlayer(Status.PLAYER2);
+                        Coordinate cPlayer1 = player1.getCoordenate();
+                        Coordinate cPlayer2 =  player2.getCoordenate();
+                        if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
+                            restart();
+                            paintAgain();
                         }
-                    });
-                    try {
-                        Thread.sleep(SLEEP);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
+                });
+                try {
+                    Thread.sleep(SLEEP);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                synchronized (this) {
                     count++;
                 }
             }

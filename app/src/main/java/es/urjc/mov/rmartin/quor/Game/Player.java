@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
-import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 public abstract class Player {

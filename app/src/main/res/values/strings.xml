@@ -14,6 +14,9 @@
     <string name="ayuda">"Ayuda"</string>
     <string name="empezar">"Empezar partida"</string>
     <string name="user">"Introduzca nombre de usuario"</string>
+    <string name="crear">"Crear partida"</string>
+    <string name="unir">"Unirte a partida"</string>
+
 
     <string-array name="player">
         <item>Jugador</item>

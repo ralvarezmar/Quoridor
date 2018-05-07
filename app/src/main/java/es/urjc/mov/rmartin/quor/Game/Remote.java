@@ -99,14 +99,14 @@ public class Remote extends Player{
         OutputStream output= s.getOutputStream();
         DataOutputStream o=new DataOutputStream(output);
         try {
-            byte buf[] = id.getBytes();
+          /*  byte buf[] = id.getBytes();
             int x= m.getC().getX();
             int y= m.getC().getY();
             Boolean type = m.getType();
             o.write(buf, 0, buf.length);
             o.writeInt(x);
             o.writeInt(y);
-            o.writeBoolean(type);
+            o.writeBoolean(type);*/
             o.flush();
         } catch (IOException e) {
             e.printStackTrace();

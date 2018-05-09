@@ -24,39 +24,22 @@ public class Remote extends Player{
         conect(nick);
     }
     private Socket s;
-    private String id;
     private void conect(final String nick) {
         final Thread c = new Thread() {
             @Override
             public void run() {
-                //ObjectOutputStream o;
-                OutputStream o;
-                ObjectInputStream out;
-                o = null;
                 try {
                     s = new Socket("10.0.2.2", 2020);
-                    o = s.getOutputStream();
-                    id=nick;
-                    byte buf[] = nick.getBytes();
-                    o.write(buf, 0, buf.length);
-                    //o = new ObjectOutputStream(s.getOutputStream());
-                    //Coordinate c= new Coordinate(3,4);
-                    //Move m = new Move(c,true);
-                    // o.writeObject(m);
+                   OutputStream output= s.getOutputStream();
+                   DataOutputStream o=new DataOutputStream(output);
+                   Message login = new Message.Login(nick);
+                   login.writeTo(o);
                 } catch (ConnectException e) {
                     System.out.println("connection refused" + e);
                 } catch (UnknownHostException e) {
                     System.out.println("cannot connect to host " + e);
                 } catch (IOException e) {
                     System.out.println("IO exception" + e);
-                } finally {
-                    if (o != null) {
-                        try {
-                            o.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
                 }
             }
         };
@@ -72,7 +55,7 @@ public class Remote extends Player{
         o = null;
         try {
             //s = new Socket("10.0.2.2", 2020);
-             o = new ObjectInputStream(s.getInputStream());
+            // o = new ObjectInputStream(s.getInputStream());
             move = (Move) o.readObject();
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);

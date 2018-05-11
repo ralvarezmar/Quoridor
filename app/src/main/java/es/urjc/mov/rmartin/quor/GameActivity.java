@@ -122,9 +122,6 @@ public class GameActivity extends AppCompatActivity {
                 Log.v("remoto", "entro en if de mandar");
                 turn[(turno+1)%2].putPlay(move);
             }
-
-            /*ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-            doBoard(statusArray);*/
         }
     }
 
@@ -254,7 +251,9 @@ public class GameActivity extends AppCompatActivity {
                 playerTop=selectLevel(playerTop);
                 break;
             case REMOTE:
+                Log.v("Red", "nuevo cliente");
                 playerTop=new Remote(logic.board,user);
+                Log.v("Red", "array");
                 remoteTurn[0]=playerTop;
                 break;
         }
@@ -272,10 +271,6 @@ public class GameActivity extends AppCompatActivity {
                 break;
             case CPU:
                 playerBottom=selectLevel(playerBottom);
-                break;
-            case REMOTE:
-                playerBottom=new Remote(logic.board,user);
-                remoteTurn[1]=playerBottom;
                 break;
         }
         turn[1]=playerBottom;
@@ -299,17 +294,12 @@ public class GameActivity extends AppCompatActivity {
             setPlayer(player1,player2);
         }
         design(statusArray);
-        switch (crear){
-            case 0://unir
-                count=1;
-                break;
-            case 1://crear
-                count=0;
-                break;
-            case 2://nada
-                count=0;
-                break;
+        if(crear==1 || crear==2){
+            count=1;
+        }else if(crear==0){
+            count=0;
         }
+
         runThread();
     }
 

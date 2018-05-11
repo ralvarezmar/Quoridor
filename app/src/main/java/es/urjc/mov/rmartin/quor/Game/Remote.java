@@ -1,13 +1,10 @@
 package es.urjc.mov.rmartin.quor.Game;
-
 import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
@@ -19,21 +16,30 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 
 public class Remote extends Player{
+    private String nick;
     public Remote(Board board,String nick) {
         super(board);
-        conect(nick);
+        this.board=board;
+        this.nick=nick;
+        conect();
     }
-    private Socket s;
-    private void conect(final String nick) {
-        final Thread c = new Thread() {
+
+    private void conect() {
+        Thread c = new Thread() {
             @Override
             public void run() {
+                Socket s;
                 try {
+                    Log.v("Red", "antes de new Socket");
                     s = new Socket("10.0.2.2", 2020);
-                   OutputStream output= s.getOutputStream();
-                   DataOutputStream o=new DataOutputStream(output);
-                   Message login = new Message.Login(nick);
-                   login.writeTo(o);
+                    OutputStream output= s.getOutputStream();
+                    DataOutputStream o=new DataOutputStream(output);
+                    Log.v("Red", "antes de hacer mensaje");
+                    Message login = new Message.Login(nick);
+                    Log.v("Red", "antes de mandar");
+                    login.writeTo(o);
+                    DataInputStream input = new DataInputStream(s.getInputStream());
+                    Message answer = Message.ReadFrom(input);
                 } catch (ConnectException e) {
                     System.out.println("connection refused" + e);
                 } catch (UnknownHostException e) {
@@ -54,6 +60,7 @@ public class Remote extends Player{
         Move move = null;
         o = null;
         try {
+            Message message;
             //s = new Socket("10.0.2.2", 2020);
             // o = new ObjectInputStream(s.getInputStream());
             move = (Move) o.readObject();
@@ -78,36 +85,27 @@ public class Remote extends Player{
     }
 
     //METODO A CLASE MENSAJE
-    private void sendMove(Move m) throws IOException {
+    /*private void sendMove(Move m) throws IOException {
         OutputStream output= s.getOutputStream();
         DataOutputStream o=new DataOutputStream(output);
         try {
-          /*  byte buf[] = id.getBytes();
+            byte buf[] = id.getBytes();
             int x= m.getC().getX();
             int y= m.getC().getY();
             Boolean type = m.getType();
             o.write(buf, 0, buf.length);
             o.writeInt(x);
             o.writeInt(y);
-            o.writeBoolean(type);*/
+            o.writeBoolean(type);
             o.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public void putPlay(Move move) {
-        //ObjectOutputStream o;
-        try {
-            sendMove(move);
-            //s = new Socket("10.0.2.2", 2020);
-            /*o = new ObjectOutputStream(s.getOutputStream());
-            Log.v("Remoto", "Mando: " + move);
-            o.writeObject(move);*/
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Override

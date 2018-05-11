@@ -18,7 +18,12 @@
     <string name="unir">"Unirte a partida"</string>
 
 
-    <string-array name="player">
+    <string-array name="player1">
+        <item>Jugador</item>
+        <item>Máquina</item>
+    </string-array>
+
+    <string-array name="player2">
         <item>Jugador</item>
         <item>Máquina</item>
         <item>Servidor</item>

@@ -48,7 +48,7 @@
         android:id="@+id/lista1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/player"/>
+        android:entries="@array/player2"/>
 
     <TextView
         android:id="@+id/textView3"
@@ -63,7 +63,7 @@
         android:id="@+id/lista2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:entries="@array/player"
+        android:entries="@array/player1"
         android:layout_marginBottom="10dp"
         />
     <LinearLayout

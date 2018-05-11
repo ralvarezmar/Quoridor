@@ -22,14 +22,10 @@ public abstract class Message {
             int msg_type = idata.readInt();
             switch (messages[msg_type]) {
                 case LOGIN:
-                    String nick=idata.readUTF();
-                    message = new Login(nick);
+                    message = new Login(idata);
                     break;
                 case PLAY:
-                    int x=idata.readInt();
-                    int y=idata.readInt();
-                    Boolean type = idata.readBoolean();
-                    message = new Play(x,y,type);
+                    message = new Play(idata);
                     break;
                 case OK:
                     message = new OkMessage();
@@ -88,9 +84,16 @@ public abstract class Message {
 
         private static final MessageTypes TMSG = MessageTypes.LOGIN;
         String nick;
+
+        Login(DataInputStream idata) throws IOException {
+            byte[] buffer=new byte[idata.readInt()];
+            idata.readFully(buffer);
+            this.nick=new String(buffer,"UTF-8");
+        }
         Login(String nick){
             this.nick=nick;
         }
+
         @Override
         public MessageTypes type() {
             return TMSG;
@@ -100,6 +103,7 @@ public abstract class Message {
             try {
                 odata.writeInt(type().ordinal());
                 byte buf[] = nick.getBytes();
+                odata.writeInt(buf.length);
                 odata.write(buf,0,buf.length);
                 odata.flush();
             } catch (IOException e) {
@@ -114,6 +118,11 @@ public abstract class Message {
         int y;
         Boolean type;
 
+        Play(DataInputStream idata) throws IOException {
+            this.x=idata.readInt();
+            this.y=idata.readInt();
+            this.type = idata.readBoolean();
+        }
         Play(int x,int y,Boolean type){
             this.x=x;
             this.y=y;

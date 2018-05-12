@@ -78,13 +78,10 @@ public class Dijkstra {
         //Log.v("ANTES ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
 
         if (pesoViejo != INFINITO && (pesoViejo>peso || pesoViejo==NOVISITADO)) {
-           // Log.v("Entra ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
             matriz[x][y].prev = posAnt;
             matriz[x][y].lenght = peso;
             matriz[x][y].box = pos;
-//          Log.v("patata", matriz[x][y].toString());
             ArrayList<Box> around = board.aroundBoxes(pos);
-            //Log.v("Alrededor: ", around.toString());
             for (Box posAct : around) {
                 visit(posAct, matriz[x][y], peso + 1,destiny);
                 if (posAct.getCoordenate().getX() == destiny) {

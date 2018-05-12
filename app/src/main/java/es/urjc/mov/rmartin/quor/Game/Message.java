@@ -7,9 +7,9 @@ import java.io.IOException;
 
 public abstract class Message {
     public enum MessageTypes {
-        LOGIN, PLAY, OK, ERROR
+        LOGIN, PLAY, OK, OKLOGIN, ERROR
     }
-
+    public static int turnoGlob;
     private static final MessageTypes[] messages = MessageTypes.values();
 
     public abstract MessageTypes type();
@@ -29,6 +29,9 @@ public abstract class Message {
                     break;
                 case OK:
                     message = new OkMessage();
+                    break;
+                case OKLOGIN:
+                    message = new OkLogin(idata);
                     break;
                 case ERROR:
                     message = new ErrorMessage();
@@ -80,6 +83,36 @@ public abstract class Message {
         }
     }
 
+    public static class OkLogin extends Message{
+        private static final MessageTypes TMSG = MessageTypes.OKLOGIN;
+        int turno;
+
+        OkLogin(DataInputStream idata) throws IOException{
+            this.turno=idata.readInt();
+        }
+
+        OkLogin(int turno){
+            this.turno=turno;
+        }
+
+        @Override
+        public MessageTypes type() {
+            return TMSG;
+        }
+
+        @Override
+        public void writeTo(DataOutputStream odata) {
+            try {
+                odata.writeInt(type().ordinal());
+                odata.writeInt(turno);
+                turnoGlob=turno;
+                odata.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static class Login extends Message {
 
         private static final MessageTypes TMSG = MessageTypes.LOGIN;
@@ -94,6 +127,15 @@ public abstract class Message {
             this.nick=nick;
         }
 
+        public String getNick() {
+            return nick;
+        }
+        public void setNick(String nick) {
+            this.nick = nick;
+        }
+        public static MessageTypes getTmsg() {
+            return TMSG;
+        }
         @Override
         public MessageTypes type() {
             return TMSG;
@@ -116,9 +158,11 @@ public abstract class Message {
         private static final MessageTypes TMSG = MessageTypes.PLAY;
         int x;
         int y;
+        String nick;
         Boolean type;
 
         Play(DataInputStream idata) throws IOException {
+            this.nick=nick;
             this.x=idata.readInt();
             this.y=idata.readInt();
             this.type = idata.readBoolean();
@@ -133,6 +177,21 @@ public abstract class Message {
             return TMSG;
         }
 
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
         public void writeTo(DataOutputStream odata){
             try{
                 odata.writeInt(type().ordinal());
@@ -143,6 +202,8 @@ public abstract class Message {
             }catch (IOException e){
                 throw new RuntimeException(this + "write: " + e);
             }
+
         }
+
     }
 }

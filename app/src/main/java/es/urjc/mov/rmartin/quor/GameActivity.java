@@ -14,6 +14,7 @@ import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
 import es.urjc.mov.rmartin.quor.Game.Level;
 import es.urjc.mov.rmartin.quor.Game.Logic;
+import es.urjc.mov.rmartin.quor.Game.Message;
 import es.urjc.mov.rmartin.quor.Game.Move;
 import es.urjc.mov.rmartin.quor.Game.Player;
 import es.urjc.mov.rmartin.quor.Game.IAMedium;
@@ -37,11 +38,11 @@ public class GameActivity extends AppCompatActivity {
     int ganadas=0;
     int player1;
     int player2;
-    int count=0;
+    int count= Message.turnoGlob;
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
-    Player remoteTurn[];
+    Player remoteTurn;
     String user;
     int crear;
     volatile boolean finish = true;
@@ -118,9 +119,9 @@ public class GameActivity extends AppCompatActivity {
                 humanTurn[turno].putPlay(move);
             }while(!humanTurn[turno].validMove(move,player));
             changeStatus(move,player);
-            if(remoteTurn[(turno+1)%2]!=null){
+            if(remoteTurn!=null){
                 Log.v("remoto", "entro en if de mandar");
-                turn[(turno+1)%2].putPlay(move);
+                remoteTurn.putPlay(move);
             }
         }
     }
@@ -235,7 +236,6 @@ public class GameActivity extends AppCompatActivity {
     private void setPlayer(int player1,int player2){
         turn=new Player[2];
         humanTurn=new Human[2];
-        remoteTurn=new Remote[2];
         switch (PlayerMode.getVal(player1)){
             case HUMAN:
                 Switch eleccion=(Switch) findViewById(R.id.eleccionTop);
@@ -254,7 +254,7 @@ public class GameActivity extends AppCompatActivity {
                 Log.v("Red", "nuevo cliente");
                 playerTop=new Remote(logic.board,user);
                 Log.v("Red", "array");
-                remoteTurn[0]=playerTop;
+                remoteTurn=playerTop;
                 break;
         }
         turn[0]=playerTop;
@@ -294,12 +294,12 @@ public class GameActivity extends AppCompatActivity {
             setPlayer(player1,player2);
         }
         design(statusArray);
-        if(crear==1 || crear==2){
+        /*if(crear==1 || crear==2){
             count=1;
         }else if(crear==0){
             count=0;
         }
-
+*/
         runThread();
     }
 
@@ -330,8 +330,8 @@ public class GameActivity extends AppCompatActivity {
                         do {
                             move = turn[turno].askPlay(player);
                         }while(move==null);
-                        if(remoteTurn[(turno+1)%2]!=null){
-                            turn[(turno+1)%2].putPlay(move);
+                        if(remoteTurn!=null){
+                            remoteTurn.putPlay(move);
                         }
                         Log.v("turno", "IA: " + move);
                         changeStatus(move,player);

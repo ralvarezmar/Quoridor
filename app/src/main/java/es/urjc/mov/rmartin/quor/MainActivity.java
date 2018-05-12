@@ -26,21 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
             Editable edit = ed.getText();
             String s = edit.toString();
-            CheckBox rbcrear = (CheckBox) findViewById(R.id.crear);
-            CheckBox rbunir = (CheckBox) findViewById(R.id.unir);
+            //CheckBox rbcrear = (CheckBox) findViewById(R.id.crear);
+            //CheckBox rbunir = (CheckBox) findViewById(R.id.unir);
             int crear;
-            if(rbunir.isChecked()){
+            /*if(rbunir.isChecked()){
                 crear = 0;
             }else if(rbcrear.isChecked() || rbcrear.isChecked() && rbunir.isChecked()){
                 crear=1;
             }else{
                 crear=2;
-            }
+            }*/
             Intent game = new Intent(MainActivity.this,GameActivity.class);
             game.putExtra("player1",selected1);
             game.putExtra("player2",selected2);
             game.putExtra("user",s);
-            game.putExtra("crear",crear);
+            //game.putExtra("crear",crear);
             //Bundle msg = new Bundle();
             startActivity(game);
         }

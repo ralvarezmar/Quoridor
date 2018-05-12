@@ -12,26 +12,28 @@ import java.net.UnknownHostException;
 
 import es.urjc.mov.rmartin.quor.Graphic.Board;
 import es.urjc.mov.rmartin.quor.Graphic.Box;
+import es.urjc.mov.rmartin.quor.Graphic.Coordinate;
 import es.urjc.mov.rmartin.quor.Graphic.Status;
 
 
 public class Remote extends Player{
     private String nick;
+    private Socket s;
+
     public Remote(Board board,String nick) {
         super(board);
         this.board=board;
         this.nick=nick;
         conect();
     }
-
     private void conect() {
         Thread c = new Thread() {
             @Override
             public void run() {
-                Socket s;
+               // Socket s;
                 try {
                     Log.v("Red", "antes de new Socket");
-                    s = new Socket("10.0.2.2", 2020);
+                    s = new Socket("10.1.128.74", 2020);
                     OutputStream output= s.getOutputStream();
                     DataOutputStream o=new DataOutputStream(output);
                     Log.v("Red", "antes de hacer mensaje");
@@ -55,31 +57,21 @@ public class Remote extends Player{
 
     @Override
     public Move askPlay(Status statusPlayer) throws InterruptedException {
-        Socket s = null;
         ObjectInputStream o;
         Move move = null;
         o = null;
         try {
-            Message message;
-            //s = new Socket("10.0.2.2", 2020);
-            // o = new ObjectInputStream(s.getInputStream());
-            move = (Move) o.readObject();
+            DataInputStream input = new DataInputStream(s.getInputStream());
+            Message answer = Message.ReadFrom(input);
+            Message.Play play = (Message.Play) answer;
+            Coordinate c= new Coordinate(play.getX(),play.getY());
+
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);
         } catch (UnknownHostException e) {
             System.out.print("cannot connnect " + e);
         } catch (IOException e) {
             System.out.print("IO exception" + e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            if(o!=null){
-                try {
-                    o.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         return move;
     }
@@ -105,7 +97,19 @@ public class Remote extends Player{
 
     @Override
     public void putPlay(Move move) {
-
+        OutputStream output= null;
+        try {
+            output = s.getOutputStream();
+            DataOutputStream o=new DataOutputStream(output);
+            //AÑADIR NICK AL MENSAJE
+            int x= move.getC().getX();
+            int y=move.getC().getY();
+            Boolean type = move.getType();
+            Message message = new Message.Play(x,y,type);
+            message.writeTo(o);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

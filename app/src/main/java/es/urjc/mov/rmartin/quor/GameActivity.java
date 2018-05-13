@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity {
     int ganadas=0;
     int player1;
     int player2;
-    int count= Message.turnoGlob;
+    int count;
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
@@ -307,6 +307,7 @@ public class GameActivity extends AppCompatActivity {
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
+                count = Message.turnoGlob;
                 int turno;
                 synchronized (this) {
                     turno = count % turn.length;

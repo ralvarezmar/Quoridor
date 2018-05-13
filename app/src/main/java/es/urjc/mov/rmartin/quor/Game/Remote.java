@@ -1,5 +1,6 @@
 package es.urjc.mov.rmartin.quor.Game;
 import android.util.Log;
+import android.widget.PopupWindow;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -19,6 +20,8 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class Remote extends Player{
     private String nick;
     private Socket s;
+    private final String IP="192.168.1.4";
+    private final int PORT=2020;
 
     public Remote(Board board,String nick) {
         super(board);
@@ -26,19 +29,17 @@ public class Remote extends Player{
         this.nick=nick;
         conect();
     }
+
     private void conect() {
         Thread c = new Thread() {
             @Override
             public void run() {
                // Socket s;
                 try {
-                    Log.v("Red", "antes de new Socket");
-                    s = new Socket("10.1.128.74", 2020);
+                    s = new Socket(IP, PORT);
                     OutputStream output= s.getOutputStream();
                     DataOutputStream o=new DataOutputStream(output);
-                    Log.v("Red", "antes de hacer mensaje");
                     Message login = new Message.Login(nick);
-                    Log.v("Red", "antes de mandar");
                     login.writeTo(o);
                     DataInputStream input = new DataInputStream(s.getInputStream());
                     Message answer = Message.ReadFrom(input);
@@ -76,28 +77,10 @@ public class Remote extends Player{
         return move;
     }
 
-    //METODO A CLASE MENSAJE
-    /*private void sendMove(Move m) throws IOException {
-        OutputStream output= s.getOutputStream();
-        DataOutputStream o=new DataOutputStream(output);
-        try {
-            byte buf[] = id.getBytes();
-            int x= m.getC().getX();
-            int y= m.getC().getY();
-            Boolean type = m.getType();
-            o.write(buf, 0, buf.length);
-            o.writeInt(x);
-            o.writeInt(y);
-            o.writeBoolean(type);
-            o.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     @Override
     public void putPlay(Move move) {
-        OutputStream output= null;
+        OutputStream output;
         try {
             output = s.getOutputStream();
             DataOutputStream o=new DataOutputStream(output);

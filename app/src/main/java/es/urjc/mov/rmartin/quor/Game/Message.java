@@ -1,5 +1,7 @@
 package es.urjc.mov.rmartin.quor.Game;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -89,6 +91,8 @@ public abstract class Message {
 
         OkLogin(DataInputStream idata) throws IOException{
             this.turno=idata.readInt();
+            turnoGlob=turno;
+            Log.v("remoto", "Recibido turno: " + turno);
         }
 
         OkLogin(int turno){
@@ -105,7 +109,6 @@ public abstract class Message {
             try {
                 odata.writeInt(type().ordinal());
                 odata.writeInt(turno);
-                turnoGlob=turno;
                 odata.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -206,7 +209,7 @@ public abstract class Message {
 
         public void writeTo(DataOutputStream odata){
             try{
-                odata.writeInt(type().ordinal());
+                odata.writeInt(TMSG.ordinal());
                 byte buf[] = nick.getBytes();
                 odata.writeInt(buf.length);
                 odata.write(buf,0,buf.length);

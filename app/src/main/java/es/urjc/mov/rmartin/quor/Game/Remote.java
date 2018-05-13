@@ -65,7 +65,7 @@ public class Remote extends Player{
             Message answer = Message.ReadFrom(input);
             Message.Play play = (Message.Play) answer;
             Coordinate c= new Coordinate(play.getX(),play.getY());
-
+            move = new Move(c,play.getType());
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);
         } catch (UnknownHostException e) {
@@ -101,11 +101,10 @@ public class Remote extends Player{
         try {
             output = s.getOutputStream();
             DataOutputStream o=new DataOutputStream(output);
-            //AÑADIR NICK AL MENSAJE
             int x= move.getC().getX();
             int y=move.getC().getY();
             Boolean type = move.getType();
-            Message message = new Message.Play(x,y,type);
+            Message message = new Message.Play(nick,x,y,type);
             message.writeTo(o);
         } catch (IOException e) {
             e.printStackTrace();

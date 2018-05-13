@@ -154,20 +154,47 @@ public abstract class Message {
         }
     }
     public static class Play extends Message{
-
         private static final MessageTypes TMSG = MessageTypes.PLAY;
+        String nick;
         int x;
         int y;
-        String nick;
         Boolean type;
 
+        public String getNick() {
+            return nick;
+        }
+        public void setNick(String nick) {
+            this.nick = nick;
+        }
+        public int getX() {
+            return x;
+        }
+        public void setX(int x) {
+            this.x = x;
+        }
+        public int getY() {
+            return y;
+        }
+        public void setY(int y) {
+            this.y = y;
+        }
+        public Boolean getType() {
+            return type;
+        }
+        public void setType(Boolean type) {
+            this.type = type;
+        }
         Play(DataInputStream idata) throws IOException {
-            this.nick=nick;
+            byte[] buffer=new byte[idata.readInt()];
+            idata.readFully(buffer);
+            this.nick=new String(buffer,"UTF-8");
             this.x=idata.readInt();
             this.y=idata.readInt();
             this.type = idata.readBoolean();
         }
-        Play(int x,int y,Boolean type){
+
+        Play(String nick,int x,int y,Boolean type){
+            this.nick=nick;
             this.x=x;
             this.y=y;
             this.type=type;
@@ -177,24 +204,12 @@ public abstract class Message {
             return TMSG;
         }
 
-        public int getY() {
-            return y;
-        }
-
-        public void setY(int y) {
-            this.y = y;
-        }
-        public int getX() {
-            return x;
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
         public void writeTo(DataOutputStream odata){
             try{
                 odata.writeInt(type().ordinal());
+                byte buf[] = nick.getBytes();
+                odata.writeInt(buf.length);
+                odata.write(buf,0,buf.length);
                 odata.writeInt(x);
                 odata.writeInt(y);
                 odata.writeBoolean(type);
@@ -202,8 +217,6 @@ public abstract class Message {
             }catch (IOException e){
                 throw new RuntimeException(this + "write: " + e);
             }
-
         }
-
     }
 }

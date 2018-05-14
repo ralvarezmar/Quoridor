@@ -52,7 +52,6 @@ public class IADijkstra extends Player {
         }
         move=way.get(way.size()-1);
         //cpu.setStatus(Status.FREE);
-
         //move.setStatus(player);
         return move;
     }

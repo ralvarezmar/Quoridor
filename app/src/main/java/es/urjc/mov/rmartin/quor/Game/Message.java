@@ -22,6 +22,7 @@ public abstract class Message {
         Message message = null;
         try {
             int msg_type = idata.readInt();
+            Log.v("remoto", "Mensaje recibido: " + msg_type);
             switch (messages[msg_type]) {
                 case LOGIN:
                     message = new Login(idata);

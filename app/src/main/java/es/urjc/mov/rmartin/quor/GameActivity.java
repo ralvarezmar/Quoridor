@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -305,7 +306,7 @@ public class GameActivity extends AppCompatActivity {
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
-                int turno;
+                final int turno;
                 synchronized (this) {
                     turno = count % turn.length;
                 }
@@ -356,6 +357,7 @@ public class GameActivity extends AppCompatActivity {
                             restart();
                             paintAgain();
                         }
+                        paintTurn(turno);
                     }
                 });
                 synchronized (this) {
@@ -366,6 +368,20 @@ public class GameActivity extends AppCompatActivity {
         }).start();
     }
 
+
+    private void paintTurn(int turno){
+        if(turno==0){
+            LinearLayout bottom =(LinearLayout) findViewById(R.id.textBottom);
+            LinearLayout top =(LinearLayout) findViewById(R.id.textTop);
+            bottom.setBackgroundColor(Color.GRAY);
+            top.setBackgroundColor(Color.TRANSPARENT);
+        }else{
+            LinearLayout bottom =(LinearLayout) findViewById(R.id.textBottom);
+            LinearLayout top =(LinearLayout) findViewById(R.id.textTop);
+            top.setBackgroundColor(Color.GRAY);
+            bottom.setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
     private void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){

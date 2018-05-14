@@ -20,7 +20,7 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class Remote extends Player{
     private String nick;
     private Socket s;
-    private final String IP="192.168.1.4";
+    private final String IP="10.0.2.2";
     private final int PORT=2020;
 
     public Remote(Board board,String nick) {
@@ -41,8 +41,10 @@ public class Remote extends Player{
                     DataOutputStream o=new DataOutputStream(output);
                     Message login = new Message.Login(nick);
                     login.writeTo(o);
+                    o.close();
                     DataInputStream input = new DataInputStream(s.getInputStream());
                     Message answer = Message.ReadFrom(input);
+                    input.close();
                 } catch (ConnectException e) {
                     System.out.println("connection refused" + e);
                 } catch (UnknownHostException e) {
@@ -58,15 +60,14 @@ public class Remote extends Player{
 
     @Override
     public Move askPlay(Status statusPlayer) throws InterruptedException {
-        ObjectInputStream o;
         Move move = null;
-        o = null;
         try {
             DataInputStream input = new DataInputStream(s.getInputStream());
             Message answer = Message.ReadFrom(input);
             Message.Play play = (Message.Play) answer;
             Coordinate c= new Coordinate(play.getX(),play.getY());
             move = new Move(c,play.getType());
+            input.close();
         } catch (ConnectException e) {
             System.out.print("connection refused " + e);
         } catch (UnknownHostException e) {
@@ -89,6 +90,8 @@ public class Remote extends Player{
             Boolean type = move.getType();
             Message message = new Message.Play(nick,x,y,type);
             message.writeTo(o);
+            System.out.print("Mando jugada");
+            o.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

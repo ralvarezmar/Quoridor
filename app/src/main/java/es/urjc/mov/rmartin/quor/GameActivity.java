@@ -29,7 +29,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=2000;
+    static final int SLEEP=1000;
     static final int MINSIZE=-15;
     Logic logic;
     Player playerTop;
@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity {
     int ganadas=0;
     int player1;
     int player2;
-    int count;
+    int count=0;
     Level level = Level.HARD;
     Player turn[];
     Player humanTurn[];
@@ -115,10 +115,10 @@ public class GameActivity extends AppCompatActivity {
             Coordinate c=new Coordinate(x,y);
             Boolean check = eleccion.isChecked();
             Move move=new Move(c,check);
-            do {
+            if(humanTurn[turno].validMove(move,player)){
                 humanTurn[turno].putPlay(move);
-            }while(!humanTurn[turno].validMove(move,player));
-            changeStatus(move,player);
+                changeStatus(move,player);
+            }
             if(remoteTurn!=null){
                 Log.v("remoto", "entro en if de mandar");
                 remoteTurn.putPlay(move);
@@ -169,12 +169,10 @@ public class GameActivity extends AppCompatActivity {
         row.addView(imgButton);
         imgButton.setOnClickListener(new GameBoton(x,y));
         Box b = logic.board.getPress(x,y);
-
         boxes=setBoxes(boxes);
         images=setImages(images);
         backs=setBackgrounds(backs);
         int num = statusArray.get(id);
-
         b.setStatus(boxes[num]);
         imgButton.setImageResource(images[num]);
         imgButton.setBackgroundResource(backs[num]);
@@ -201,7 +199,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void recuperateStatus(Bundle savedInstanceState){
+    private void recoverStatus(Bundle savedInstanceState){
         ArrayList<Integer> statusArray = savedInstanceState.getIntegerArrayList("estados");
         int intLevel = savedInstanceState.getInt("nivel");
         level = Level.values()[intLevel];
@@ -255,6 +253,7 @@ public class GameActivity extends AppCompatActivity {
                 playerTop=new Remote(logic.board,user);
                 Log.v("Red", "array");
                 remoteTurn=playerTop;
+                count = Message.turnoGlob;
                 break;
         }
         turn[0]=playerTop;
@@ -287,7 +286,7 @@ public class GameActivity extends AppCompatActivity {
         }
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
-            recuperateStatus(savedInstanceState);
+            recoverStatus(savedInstanceState);
             setPlayer(player1,player2);
             return;
         }else{
@@ -298,8 +297,7 @@ public class GameActivity extends AppCompatActivity {
             count=1;
         }else if(crear==0){
             count=0;
-        }
-*/
+        }*/
         runThread();
     }
 
@@ -307,7 +305,6 @@ public class GameActivity extends AppCompatActivity {
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
-                count = Message.turnoGlob;
                 int turno;
                 synchronized (this) {
                     turno = count % turn.length;
@@ -331,7 +328,12 @@ public class GameActivity extends AppCompatActivity {
                         do {
                             move = turn[turno].askPlay(player);
                         }while(move==null);
-                        if(remoteTurn!=null){
+                        try {
+                            Thread.sleep(SLEEP);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(turn[(turno+1)%2]==remoteTurn){
                             remoteTurn.putPlay(move);
                         }
                         Log.v("turno", "IA: " + move);
@@ -356,11 +358,6 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }
                 });
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 synchronized (this) {
                     count++;
                 }
@@ -383,10 +380,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void printBoard(ArrayList statusArray){
-        int count=0;
+        int c=0;
         for(int i = 0; i < logic.board.game.length; i++) {
             for(int j= 0;j < logic.board.game[i].length;j++) {
-               System.out.print(statusArray.get(count));
+               System.out.print(statusArray.get(c));
                System.out.print(" ");
             }
             System.out.println(" ");

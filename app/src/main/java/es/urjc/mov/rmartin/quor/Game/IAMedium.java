@@ -33,7 +33,7 @@ public class IAMedium extends Player {
                 }
             }
             cpu.setStatus(Status.FREE);
-        }while (!boxOk(move));
+        }while (!isMoveValid(move,player));
         move.setStatus(Status.PLAYER2);
         return move;
     }
@@ -46,23 +46,21 @@ public class IAMedium extends Player {
         int casillaY;
         Box player = b.getPlayer(play);
 
-        do{
-            if (player==null){
-                casillaY = (int) (Math.random() * b.game[0].length);
-                wall=b.getPress((int) (b.game[0].length-1),casillaY);
-            }else{
-                wall=b.getPress(player.getCoordenate().getX()-1,player.getCoordenate().getY());
-                if(wall==null || wall.getStatus()!= Status.FREE){
-                    casillaX = rand.nextInt(1 + 1 + 1) - 1;
-                    if(casillaX!=0){
-                        wall = b.getPress(Math.abs(casillaX + player.getCoordenate().getX()), player.getCoordenate().getY());
-                    }else{
-                        casillaY = rand.nextInt(1 + 1 + 1) - 1;
-                        wall = b.getPress(player.getCoordenate().getX(), Math.abs(casillaY + player.getCoordenate().getY()));
-                    }
+        if (player==null){
+            casillaY = (int) (Math.random() * b.game[0].length);
+            wall=b.getPress((int) (b.game[0].length-1),casillaY);
+        }else{
+            wall=b.getPress(player.getCoordenate().getX()-1,player.getCoordenate().getY());
+            if(wall==null || wall.getStatus()!= Status.FREE){
+                casillaX = rand.nextInt(1 + 1 + 1) - 1;
+                if(casillaX!=0){
+                    wall = b.getPress(Math.abs(casillaX + player.getCoordenate().getX()), player.getCoordenate().getY());
+                }else{
+                    casillaY = rand.nextInt(1 + 1 + 1) - 1;
+                    wall = b.getPress(player.getCoordenate().getX(), Math.abs(casillaY + player.getCoordenate().getY()));
                 }
             }
-        }while(!boxOk(wall));
+        }
         wall.setStatus(Status.WALL);
         return wall;
     }

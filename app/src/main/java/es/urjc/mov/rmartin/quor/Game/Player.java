@@ -16,8 +16,8 @@ public abstract class Player {
     boolean boxOk(Box box){
         int x= box.getCoordenate().getX();
         int y= box.getCoordenate().getY();
-        return !((box == null || (x < 0 && x > (board.game[0].length-1))) ||
-                (y < 0 && y > (board.game[0].length-1) || box.getStatus() != Status.FREE));
+        return !((x < 0 && x > (board.game[0].length-1))) ||
+                (y < 0 && y > (board.game[0].length-1) || box.getStatus() != Status.FREE);
     }
 
     boolean isMoveValid(Box pressed, Status player){

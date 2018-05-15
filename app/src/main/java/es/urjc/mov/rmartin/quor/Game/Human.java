@@ -18,15 +18,14 @@ public class Human extends Player {
     private static final Object monitor = new Object();
 
 
+
     private boolean checkWall(Box player1,Box player2){
+
         Dijkstra play1 = new Dijkstra(board,player1);
         ArrayList wayPlayer1 = play1.doWay(0);
         Dijkstra play2 = new Dijkstra(board,player2);
         ArrayList wayPlayer2 = play2.doWay(board.game.length-1);
-        if(wayPlayer1.size()<=1 || wayPlayer2.size()<=1){
-            return false;
-        }
-        return true;
+        return (wayPlayer1.size()>0 && wayPlayer2.size()>0);
     }
 
     @Override
@@ -44,15 +43,16 @@ public class Human extends Player {
         Box player2=b.getPlayer(Status.PLAYER2);
         Coordinate c= m.getC();
         Box pressed=b.getPress(c);
-        if(!m.getType() && checkWall(player1,player2)){
-           // pressed.setStatus(Status.WALL);
-            return true;
-        }else if(m.getType() && isMoveValid(pressed,status)){
-            //pressed.setStatus(status);
-            //b.getPlayer(status).setStatus(Status.FREE);
-            return true;
+        if(!m.getType() && pressed.getStatus()==Status.FREE){
+            pressed.setStatus(Status.WALL);
+            if(checkWall(player1,player2)){
+                pressed.setStatus(Status.FREE);
+                return true;
+            }
+            pressed.setStatus(Status.FREE);
+            return false;
         }
-        return false;
+        return(m.getType() && isMoveValid(pressed,status));
     }
 
     @Override

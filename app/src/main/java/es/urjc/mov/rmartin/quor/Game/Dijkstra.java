@@ -76,7 +76,6 @@ public class Dijkstra {
         int pesoViejo=matriz[x][y].lenght;
         //Log.v("visit ",x + " " + y);
         //Log.v("ANTES ","Peso viejo: " + pesoViejo + "peso nuevo: " + peso);
-
         if (pesoViejo != INFINITO && (pesoViejo>peso || pesoViejo==NOVISITADO)) {
             matriz[x][y].prev = posAnt;
             matriz[x][y].lenght = peso;
@@ -101,6 +100,13 @@ public class Dijkstra {
             way.add(previo.box);
             previo=previo.prev;
         }
+       /* if(way.size()==0){
+            return null;
+        }
+        Box lastBox=way.get(0);
+        if(lastBox.getCoordenate().getX()!=destiny){
+            return null;
+        }*/
         return way;
     }
 }

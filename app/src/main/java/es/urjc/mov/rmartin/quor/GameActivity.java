@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -118,11 +120,14 @@ public class GameActivity extends AppCompatActivity {
             if(humanTurn[turno].validMove(move,player)){
                 humanTurn[turno].putPlay(move);
                 changeStatus(move,player);
+                System.out.println("Cambio estado y envío jugada");
+                if(remoteTurn!=null){
+                    System.out.println("Antes de putPlay " + move);
+                    remoteTurn.putPlay(move);
+                    System.out.println("Despues de PUTPLAYYYYYYYYY");
+                }
             }
-            if(remoteTurn!=null){
-                Log.v("remoto", "entro en if de mandar");
-                remoteTurn.putPlay(move);
-            }
+
         }
     }
 
@@ -251,7 +256,6 @@ public class GameActivity extends AppCompatActivity {
             case REMOTE:
                 Log.v("Red", "nuevo cliente");
                 playerTop=new Remote(logic.board,user);
-                Log.v("Red", "array");
                 remoteTurn=playerTop;
                 count = Message.turnoGlob;
                 break;
@@ -293,6 +297,7 @@ public class GameActivity extends AppCompatActivity {
             setPlayer(player1,player2);
         }
         design(statusArray);
+        count=Message.turnoGlob;
         /*if(crear==1 || crear==2){
             count=1;
         }else if(crear==0){
@@ -305,7 +310,7 @@ public class GameActivity extends AppCompatActivity {
         new Thread(new Runnable() {
         public void run(){
             while (finish) {
-                int turno;
+                final int turno;
                 synchronized (this) {
                     turno = count % turn.length;
                 }
@@ -326,7 +331,7 @@ public class GameActivity extends AppCompatActivity {
                     try {
                         Move move;
                         do {
-                            move = turn[turno].askPlay(player);
+                                move = turn[turno].askPlay(player);
                         }while(move==null);
                         try {
                             Thread.sleep(SLEEP);
@@ -346,7 +351,6 @@ public class GameActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                        //printBoard(statusArray);
                         doBoard(statusArray);
                         Box player1 = logic.board.getPlayer(Status.PLAYER1);
                         Box player2 = logic.board.getPlayer(Status.PLAYER2);
@@ -356,6 +360,7 @@ public class GameActivity extends AppCompatActivity {
                             restart();
                             paintAgain();
                         }
+                        paintTurn(turno);
                     }
                 });
                 synchronized (this) {
@@ -366,6 +371,18 @@ public class GameActivity extends AppCompatActivity {
         }).start();
     }
 
+
+    private void paintTurn(int turno){
+        ImageView bottom =(ImageView) findViewById(R.id.imageViewBottom);
+        ImageView top =(ImageView) findViewById(R.id.imageViewTop);
+        if(turno==0){
+            bottom.setVisibility(View.VISIBLE);
+            top.setVisibility(View.INVISIBLE);
+        }else{
+            bottom.setVisibility(View.INVISIBLE);
+            top.setVisibility(View.VISIBLE);
+        }
+    }
     private void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){

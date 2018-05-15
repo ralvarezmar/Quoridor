@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         EditText user = (EditText) findViewById(R.id.user);
         Button butHelp = (Button) findViewById(R.id.help);
 
-
         butStart.setOnClickListener(new Start(user));
         butHelp.setOnClickListener(new Help());
 

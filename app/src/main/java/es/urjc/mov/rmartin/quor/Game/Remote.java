@@ -1,10 +1,8 @@
 package es.urjc.mov.rmartin.quor.Game;
 import android.util.Log;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,9 +16,9 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class Remote extends Player{
     private String nick;
     private Socket s;
-    private final String IP="10.0.65.19";
+    private final String IP="10.1.137.144";
     private final int PORT=2020;
-    private DataInputStream in;
+    public DataInputStream in;
     private DataOutputStream out;
 
     public Remote(Board board,String nick) {
@@ -56,32 +54,29 @@ public class Remote extends Player{
 
     @Override
     public Move askPlay(Status statusPlayer) throws InterruptedException {
-        Move move = null;
-        try {
-            Message answer = Message.ReadFrom(in);
-            Message.Play play = (Message.Play) answer;
-            Coordinate c= new Coordinate(play.getX(),play.getY());
-            move = new Move(c,play.getType());
-            in.close();
-        } catch (ConnectException e) {
-            System.out.print("connection refused " + e);
-        } catch (UnknownHostException e) {
-            System.out.print("cannot connnect " + e);
-        } catch (IOException e) {
-            System.out.print("IO exception" + e);
-        }
-        return move;
+        Message answer = Message.ReadFrom(in);
+        Message.Play play = (Message.Play) answer;
+        Coordinate c= new Coordinate(play.getX(),play.getY());
+        return new Move(c,play.getType());
     }
 
 
     @Override
     public void putPlay(Move move) {
+        System.out.print("Entra en putPlay");
         int x= move.getC().getX();
         int y=move.getC().getY();
         Boolean type = move.getType();
         Message message = new Message.Play(nick,x,y,type);
-        message.writeTo(out);
-        System.out.print("Mando jugada");
+        System.out.print("Mando jugada: " + move);
+        System.out.print("Mensaje: " + message);
+       /* try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
+
+        System.out.print("Jugada mandada");
     }
 
     @Override

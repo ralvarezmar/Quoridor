@@ -12,7 +12,6 @@ public abstract class Message {
         LOGIN, PLAY, OK, OKLOGIN, ERROR
     }
     public static int turnoGlob;
-    private static final MessageTypes[] messages = MessageTypes.values();
 
     public abstract MessageTypes type();
 
@@ -23,7 +22,7 @@ public abstract class Message {
         try {
             int msg_type = idata.readInt();
             Log.v("remoto", "Mensaje recibido: " + msg_type);
-            switch (messages[msg_type]) {
+            switch (MessageTypes.values()[msg_type]) {
                 case LOGIN:
                     message = new Login(idata);
                     break;
@@ -43,8 +42,6 @@ public abstract class Message {
                     break;
             }
             return message;
-        } catch (EOFException e) {
-            throw new RuntimeException("EOF");
         } catch (IOException e) {
             throw new RuntimeException("Msg: read:" + e);
         }
@@ -210,13 +207,15 @@ public abstract class Message {
 
         public void writeTo(DataOutputStream odata){
             try{
-                odata.writeInt(TMSG.ordinal());
+                System.out.println("writeTo");
+                odata.writeInt(MessageTypes.PLAY.ordinal());
                 byte buf[] = nick.getBytes();
                 odata.writeInt(buf.length);
                 odata.write(buf,0,buf.length);
                 odata.writeInt(x);
                 odata.writeInt(y);
                 odata.writeBoolean(type);
+                System.out.println("Exit writeTo");
                 odata.flush();
             }catch (IOException e){
                 throw new RuntimeException(this + "write: " + e);

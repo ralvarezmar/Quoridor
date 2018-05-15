@@ -75,7 +75,6 @@
                 android:checked="true"
                 android:theme="@style/Switch"
                 android:thumbTint="@color/colorPrimary" />
-
             <TextView
                 android:id="@+id/textMoveTop"
                 android:layout_width="wrap_content"
@@ -86,7 +85,12 @@
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="@string/Movimiento" />
-
+            <ImageView
+                android:id="@+id/imageViewTop"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/ic_input_add"
+                android:layout_width="wrap_content" />
         </LinearLayout>
 
         <TableLayout
@@ -99,10 +103,9 @@
 
     <LinearLayout
         android:id="@+id/textBottom"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:background="@color/gray"
+        android:layout_gravity="center"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/textWallBottom"
@@ -112,6 +115,7 @@
             android:textSize="20sp"
             android:fontFamily="casual"
             android:visibility="invisible"
+            android:layout_gravity="center"
             android:textStyle="bold"
             android:text="@string/Pared"/>
 
@@ -124,7 +128,6 @@
             android:checked="true"
             android:theme="@style/Switch"
             android:thumbTint="@color/colorPrimary" />
-
         <TextView
             android:id="@+id/textMoveBottom"
             android:layout_width="wrap_content"
@@ -135,6 +138,14 @@
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
             android:text="@string/Movimiento" />
+
+        <ImageView
+            android:id="@+id/imageViewBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible"
+            app:srcCompat="@android:drawable/ic_input_add" />
     </LinearLayout>
 
 </android.widget.LinearLayout>

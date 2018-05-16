@@ -80,6 +80,7 @@ public class GameActivity extends AppCompatActivity {
         logic = new Logic(FILAS,COLUMNAS);
         Thread.currentThread().interrupt();
         count=0;
+        Log.v("Turno", "Restart");
         setPlayer(player1,player2);
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
@@ -255,7 +256,7 @@ public class GameActivity extends AppCompatActivity {
                 Log.v("Red", "nuevo cliente");
                 playerTop=new Remote(logic.board,user);
                 remoteTurn=playerTop;
-                count = Message.turnoGlob;
+                //count = Message.turnoGlob;
                 break;
         }
         turn[0]=playerTop;
@@ -325,7 +326,15 @@ public class GameActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                }else{
+                }else if(turn[turno]==remoteTurn) {
+                     try {
+                         Move move = turn[turno].askPlay(player);
+                         changeStatus(move,Status.PLAYER1);
+                         Thread.sleep(SLEEP);
+                     } catch (InterruptedException e) {
+                         e.printStackTrace();
+                     }
+                 }else{
                     try {
                         Move move;
                         do {
@@ -354,7 +363,7 @@ public class GameActivity extends AppCompatActivity {
                         Box player2 = logic.board.getPlayer(Status.PLAYER2);
                         Coordinate cPlayer1 = player1.getCoordenate();
                         Coordinate cPlayer2 =  player2.getCoordenate();
-                        if(cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0){
+                        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
                             restart();
                             paintAgain();
                         }
@@ -387,10 +396,10 @@ public class GameActivity extends AppCompatActivity {
             Box boxNow = logic.board.getPlayer(player);
             boxFuture.setStatus(player);
             boxNow.setStatus(Status.FREE);
-            //Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
+            Log.v("Movimiento","Nueva casilla: " + boxFuture + " Antigua: " + boxNow);
         }else{
             boxFuture.setStatus(Status.WALL);
-            //Log.v("Muro","Nueva casilla: " + boxFuture );
+            Log.v("Muro","Nueva casilla: " + boxFuture );
         }
     }
 

@@ -18,7 +18,7 @@ public class Remote extends Player{
     private String nick;
     private Socket s;
     //private final String IP="10.1.137.144";
-    private final String IP="192.168.1.4";
+    private final String IP="10.1.141.124";
     private final int PORT=2020;
     public DataInputStream in;
     private DataOutputStream out;
@@ -53,6 +53,16 @@ public class Remote extends Player{
         c.start();
     }
 
+    private Move changeToPlayer(Move m){
+        Coordinate c = m.getC();
+        int x = c.getX();
+        int y = c.getY();
+        int newX= (board.game.length-1)-x;
+        int newY= (board.game[1].length-1)-y;
+        Coordinate newC = new Coordinate(newX,newY);
+        return new Move(newC,m.getType());
+
+    }
 
     @Override
     public Move askPlay(Status statusPlayer) {
@@ -61,7 +71,8 @@ public class Remote extends Player{
         System.out.print("Jugada recibida: " + answer);
         Message.Play play = (Message.Play) answer;
         Coordinate c= new Coordinate(play.getX(),play.getY());
-        return new Move(c,play.getType());
+       Move move= new Move(c,play.getType());
+       return changeToPlayer(move);
     }
 
 

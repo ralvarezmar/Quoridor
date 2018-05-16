@@ -10,7 +10,7 @@ public abstract class Message {
     public enum MessageTypes {
         LOGIN, PLAY, OK, OKLOGIN, ERROR
     }
-    public static int turnoGlob;
+    public static int turnoGlob=0;
 
     public abstract MessageTypes type();
 

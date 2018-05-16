@@ -36,8 +36,8 @@ public class GameActivity extends AppCompatActivity {
     Logic logic;
     Player playerTop;
     Player playerBottom;
-    int jugadas=0;
-    int ganadas=0;
+    //int jugadas=0;
+    //int ganadas=0;
     int player1;
     int player2;
     int count=0;
@@ -48,15 +48,16 @@ public class GameActivity extends AppCompatActivity {
     String user;
     int crear;
     volatile boolean finish = true;
-
+    Database database;
 
     private void paintAgain(){
         finish=true;
         design(logic.board.getArrayStatus());
-        jugadas++;
+        //jugadas++;
+        //database.players++;
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
-        s= s+jugadas;
+        s= s+database.players;
         text.setText(s);
         runThread();
     }
@@ -82,6 +83,7 @@ public class GameActivity extends AppCompatActivity {
         count=0;
         Log.v("Turno", "Restart");
         setPlayer(player1,player2);
+        database.players++;
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
     }
@@ -121,6 +123,9 @@ public class GameActivity extends AppCompatActivity {
             if(humanTurn[turno].validMove(move,player)){
                 humanTurn[turno].putPlay(move);
                 changeStatus(move,player);
+                if(move.getC().getX()==0){
+                    database.winners++;
+                }
                 if(remoteTurn!=null){
                     remoteTurn.putPlay(move);
                     System.out.println("Despues de PUTPLAY");
@@ -210,8 +215,6 @@ public class GameActivity extends AppCompatActivity {
         player1=savedInstanceState.getInt("player1");
         player2=savedInstanceState.getInt("player2");
         if(statusArray!=null){
-            ganadas=savedInstanceState.getInt("ganadas");
-            jugadas=savedInstanceState.getInt("jugadas");
             design(statusArray);
             paintWinner();
             //selectLevel();
@@ -220,12 +223,14 @@ public class GameActivity extends AppCompatActivity {
     private void paintWinner(){
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
-        s= s+jugadas;
+        s= s+database.players;
         text.setText(s);
         text = (TextView) findViewById(R.id.ganadas);
         s= getResources().getString(R.string.ganadas);
-        s= s+ganadas;
+        s= s+database.winners;
         text.setText(s);
+        database.modifyValues(user,database.winners,database.players);
+        database.getData(user);
     }
 
     private int setConfiguration(Bundle configuration){
@@ -295,13 +300,16 @@ public class GameActivity extends AppCompatActivity {
         }else{
             setPlayer(player1,player2);
         }
+        database = new Database(getApplicationContext());
+
         design(statusArray);
+        if(database.consultaBD(user)){
+            database.getData(user);
+        }else{
+            database.putValue(user);
+        }
+        paintWinner();
         count=Message.turnoGlob;
-        /*if(crear==1 || crear==2){
-            count=1;
-        }else if(crear==0){
-            count=0;
-        }*/
         runThread();
     }
 
@@ -437,8 +445,6 @@ public class GameActivity extends AppCompatActivity {
         ArrayList<Integer> statusBoard = logic.board.getArrayStatus();
         state.putIntegerArrayList("estados", statusBoard);
         state.putInt("nivel",level.getNum());
-        state.putInt("ganadas",ganadas);
-        state.putInt("jugadas",jugadas);
         state.putInt("player1",player1);
         state.putInt("player2",player2);
         super.onSaveInstanceState(state);

@@ -1,4 +1,5 @@
 package es.urjc.mov.rmartin.quor.Game;
+import android.os.StrictMode;
 import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +17,8 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class Remote extends Player{
     private String nick;
     private Socket s;
-    private final String IP="10.1.137.144";
+    //private final String IP="10.1.137.144";
+    private final String IP="192.168.1.4";
     private final int PORT=2020;
     public DataInputStream in;
     private DataOutputStream out;
@@ -53,8 +55,10 @@ public class Remote extends Player{
 
 
     @Override
-    public Move askPlay(Status statusPlayer) throws InterruptedException {
+    public Move askPlay(Status statusPlayer) {
+        System.out.print("Entra en askPlay");
         Message answer = Message.ReadFrom(in);
+        System.out.print("Jugada recibida: " + answer);
         Message.Play play = (Message.Play) answer;
         Coordinate c= new Coordinate(play.getX(),play.getY());
         return new Move(c,play.getType());
@@ -63,6 +67,8 @@ public class Remote extends Player{
 
     @Override
     public void putPlay(Move move) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         System.out.print("Entra en putPlay");
         int x= move.getC().getX();
         int y=move.getC().getY();
@@ -70,12 +76,7 @@ public class Remote extends Player{
         Message message = new Message.Play(nick,x,y,type);
         System.out.print("Mando jugada: " + move);
         System.out.print("Mensaje: " + message);
-       /* try {
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
+        message.writeTo(out);
         System.out.print("Jugada mandada");
     }
 

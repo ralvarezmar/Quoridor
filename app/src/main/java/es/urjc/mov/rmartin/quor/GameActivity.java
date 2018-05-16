@@ -120,11 +120,9 @@ public class GameActivity extends AppCompatActivity {
             if(humanTurn[turno].validMove(move,player)){
                 humanTurn[turno].putPlay(move);
                 changeStatus(move,player);
-                System.out.println("Cambio estado y envío jugada");
                 if(remoteTurn!=null){
-                    System.out.println("Antes de putPlay " + move);
                     remoteTurn.putPlay(move);
-                    System.out.println("Despues de PUTPLAYYYYYYYYY");
+                    System.out.println("Despues de PUTPLAY");
                 }
             }
 

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 
 public abstract class Message {
@@ -186,12 +185,17 @@ public abstract class Message {
             this.type = type;
         }
         Play(DataInputStream idata) throws IOException {
+            Log.v("remoto", "Recibida jugada");
             byte[] buffer=new byte[idata.readInt()];
             idata.readFully(buffer);
             this.nick=new String(buffer,"UTF-8");
+            Log.v("remoto", "Nick: " + this.nick);
             this.x=idata.readInt();
+            Log.v("remoto", "x: " + this.x);
             this.y=idata.readInt();
+            Log.v("remoto", "x: " + this.y);
             this.type = idata.readBoolean();
+            Log.v("remoto", "x: " + this.type);
         }
 
         Play(String nick,int x,int y,Boolean type){

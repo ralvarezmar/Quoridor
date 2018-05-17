@@ -6,14 +6,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
     private final static String NAME = "database.db";
     private final static int VERSION = 1;
     public int winners;
-    public int players;
-    static final int INICIAL=0;
+    public int played;
+    private static final int INICIAL=0;
 
     public final String DATA = "Data";
     private final String CREATE_TABLASCORE = "CREATE TABLE " + DATA + " (" +
@@ -60,7 +59,7 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public DataPlayer getData(String nick){
+    public void getData(String nick){
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(" SELECT _id, Nick, Won, MAX(Play) FROM " + DATA + " WHERE Nick='"+nick+"'", null);
         if (c != null) {
@@ -68,10 +67,9 @@ public class Database extends SQLiteOpenHelper {
         }
         DataPlayer subject = new DataPlayer(c.getInt(0), c.getString(1), c.getInt(2), c.getInt(3));
         winners = c.getInt(2);
-        players = c.getInt(3);
+        played = c.getInt(3);
         db.close();
         c.close();
-        return subject;
     }
 
     public void modifyValues(String nick, int won, int play){

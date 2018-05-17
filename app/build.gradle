@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "es.urjc.mov.ruben.mygame"
+        applicationId "es.urjc.mov.rmartin.quor"
         minSdkVersion 24
         targetSdkVersion 26
         versionCode 1

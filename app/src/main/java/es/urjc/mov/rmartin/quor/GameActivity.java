@@ -54,10 +54,10 @@ public class GameActivity extends AppCompatActivity {
         finish=true;
         design(logic.board.getArrayStatus());
         //jugadas++;
-        //database.players++;
+        //database.played++;
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
-        s= s+database.players;
+        s= s+database.played;
         text.setText(s);
         runThread();
     }
@@ -83,7 +83,7 @@ public class GameActivity extends AppCompatActivity {
         count=0;
         Log.v("Turno", "Restart");
         setPlayer(player1,player2);
-        database.players++;
+        database.played++;
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
     }
@@ -123,9 +123,6 @@ public class GameActivity extends AppCompatActivity {
             if(humanTurn[turno].validMove(move,player)){
                 humanTurn[turno].putPlay(move);
                 changeStatus(move,player);
-                if(move.getC().getX()==0){
-                    database.winners++;
-                }
                 if(remoteTurn!=null){
                     remoteTurn.putPlay(move);
                     System.out.println("Despues de PUTPLAY");
@@ -223,13 +220,13 @@ public class GameActivity extends AppCompatActivity {
     private void paintWinner(){
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
-        s= s+database.players;
+        s= s+database.played;
         text.setText(s);
         text = (TextView) findViewById(R.id.ganadas);
         s= getResources().getString(R.string.ganadas);
         s= s+database.winners;
         text.setText(s);
-        database.modifyValues(user,database.winners,database.players);
+        database.modifyValues(user,database.winners,database.played);
         database.getData(user);
     }
 
@@ -362,6 +359,11 @@ public class GameActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                try {
+                    Thread.sleep(SLEEP);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 runOnUiThread(new Runnable(){
                     @Override
                     public void run() {
@@ -372,6 +374,9 @@ public class GameActivity extends AppCompatActivity {
                         Coordinate cPlayer1 = player1.getCoordenate();
                         Coordinate cPlayer2 =  player2.getCoordenate();
                         if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+                            if(cPlayer2.getX()==0){
+                                database.winners++;
+                            }
                             restart();
                             paintAgain();
                         }
@@ -398,6 +403,7 @@ public class GameActivity extends AppCompatActivity {
             top.setVisibility(View.VISIBLE);
         }
     }
+
     private void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){

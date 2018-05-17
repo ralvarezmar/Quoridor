@@ -14,6 +14,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -48,14 +49,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
                     Toast.makeText(MapsActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
                     MarkerOptions marker = new MarkerOptions().position(position).title("Your position");
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
                     mMap.addMarker(marker);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
                     mMap.setMinZoomPreference(12f);
                     mMap.setMaxZoomPreference(16f);
                     CircleOptions circleOptions = new CircleOptions();
-                    circleOptions.strokeColor(Color.CYAN);
+                    circleOptions.strokeColor(Color.BLUE);
                     circleOptions.center(position);
-                    circleOptions.radius(5000);
+                    circleOptions.radius(4000);
                     mMap.addCircle(circleOptions);
                 }
             }

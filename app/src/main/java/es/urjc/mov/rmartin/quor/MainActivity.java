@@ -53,7 +53,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    public class Map implements View.OnClickListener{
+        public void onClick(View button){
+            Intent map = new Intent(MainActivity.this,MapsActivity.class);
+            startActivity(map);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
         Button butStart = (Button) findViewById(R.id.start);
         EditText user = (EditText) findViewById(R.id.user);
         Button butHelp = (Button) findViewById(R.id.help);
+        Button map = (Button) findViewById(R.id.map);
+
+        map.setOnClickListener(new Map());
 
         butStart.setOnClickListener(new Start(user));
         butHelp.setOnClickListener(new Help());

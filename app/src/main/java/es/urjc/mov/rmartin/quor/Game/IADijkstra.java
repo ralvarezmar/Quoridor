@@ -16,7 +16,7 @@ public class IADijkstra extends Player {
     public IADijkstra(Board b){
         super(b);
         this.b=b;}
-    private static final int PORCENTAJE = 20;
+    private static final int PORCENTAJE = 10;
 
     private Box getRandom(Box cpu,Status status){
         Box move;

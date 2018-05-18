@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/niveles"
-        android:title="@string/niveles">
-    <menu>
-        <item android:id="@+id/facil"
-            android:title="@string/easy"/>
-        <item android:id="@+id/medio"
-            android:title="@string/medium"/>
-        <item android:id="@+id/hard"
-            android:title="@string/hard"/>
-    </menu>
+    <item android:id="@+id/map"
+        android:title="@string/map">
     </item>
     <item android:id="@+id/help"
         android:title="@string/ayuda"/>

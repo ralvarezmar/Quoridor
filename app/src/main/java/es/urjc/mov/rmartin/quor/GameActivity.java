@@ -6,7 +6,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -31,7 +32,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=1000;
+    static final int SLEEP=2000;
     static final int MINSIZE=-15;
     Logic logic;
     Player playerTop;
@@ -47,11 +48,11 @@ public class GameActivity extends AppCompatActivity {
     Player remoteTurn;
     public String user;
     int crear;
+    Thread t;
     volatile boolean finish = true;
     Database database;
 
     private void paintAgain(){
-        finish=true;
         design(logic.board.getArrayStatus());
         //jugadas++;
         //database.played++;
@@ -59,7 +60,6 @@ public class GameActivity extends AppCompatActivity {
         String s= getResources().getString(R.string.jugadas);
         s= s+database.played;
         text.setText(s);
-        runThread();
     }
 
     private Player selectLevel(Player player){
@@ -78,29 +78,33 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void restart(){
+        t.interrupt();
+        finish=false;
+        TableLayout tl=(TableLayout)findViewById(R.id.tabla);
+        tl.removeAllViews();
         logic = new Logic(FILAS,COLUMNAS);
-        Thread.currentThread().interrupt();
         count=0;
         setPlayer(player1,player2);
         Log.v("Database", "ANTES DE INCREMENTAR Partidas jugadas: " + database.played);
         database.played++;
         Log.v("Database", "DESPUES DE INCREMENTAR Partidas jugadas: " + database.played);
-        TableLayout tl=(TableLayout)findViewById(R.id.tabla);
-        tl.removeAllViews();
         paintWinner();
     }
+
 
     private class Restart implements View.OnClickListener{
         public void onClick(View button){
             restart();
             paintAgain();
+            finish=true;
+            runThread();
         }
     }
 
     public class GameBoton implements View.OnClickListener{
         int x;
         int y;
-        public GameBoton(int x,int y) {
+        GameBoton(int x,int y) {
             this.x = x;
             this.y= y;
         }
@@ -264,6 +268,8 @@ public class GameActivity extends AppCompatActivity {
                 Log.v("Red", "nuevo cliente");
                 playerTop=new Remote(logic.board,user);
                 remoteTurn=playerTop;
+                ImageButton butRestart = (ImageButton) findViewById(R.id.restart);
+                butRestart.setVisibility(View.INVISIBLE);
                 //count = Message.turnoGlob;
                 break;
         }
@@ -322,8 +328,56 @@ public class GameActivity extends AppCompatActivity {
         runThread();
     }
 
+    private void movePC(int turno,Status player){
+        try {
+            Move move;
+            do {
+                move = turn[turno].askPlay(player);
+            }while(move==null);
+            Thread.sleep(SLEEP);
+            if(turn[(turno+1)%2]==remoteTurn){
+                remoteTurn.putPlay(move);
+                Thread.sleep(SLEEP);
+            }
+            Log.v("turno", "IA: " + move);
+            changeStatus(move,player);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void paintBoardThread(int turno){
+        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
+        doBoard(statusArray);
+        Box p1 = logic.board.getPlayer(Status.PLAYER1);
+        Box p2 = logic.board.getPlayer(Status.PLAYER2);
+         Coordinate cPlayer1 = p1.getCoordenate();
+         Coordinate cPlayer2 =  p2.getCoordenate();
+         if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+             finish=false;
+             if(cPlayer2.getX()==0){
+                Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
+                database.winners++;
+                Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
+             }
+            restart();
+            paintAgain();
+            paintWinner();
+            finish=true;
+            runThread();
+        }
+        paintTurn(turno);
+    }
+
+    private Status choosePlayer(int turno){
+        if(turno==1){
+            return Status.PLAYER2;
+        }else{
+            return Status.PLAYER1;
+        }
+    }
     private void runThread(){
-        new Thread(new Runnable() {
+        t = new Thread(new Runnable() {
         public void run(){
             while (finish) {
                 final int turno;
@@ -332,12 +386,8 @@ public class GameActivity extends AppCompatActivity {
                 }
                 Log.v("turno", "Numero: " + count + " Turno: " + turno);
                 Status player;
-                if(turno==1){
-                    player=Status.PLAYER2;
-                }else{
-                    player=Status.PLAYER1;
-                }
-                 if(humanTurn[turno]!=null){
+                player=choosePlayer(turno);
+                if(humanTurn[turno]!=null){
                     try {
                         turn[turno].askPlay(player);
                     } catch (InterruptedException e) {
@@ -351,53 +401,13 @@ public class GameActivity extends AppCompatActivity {
                      } catch (InterruptedException e) {
                          e.printStackTrace();
                      }
-                 }else{
-                    try {
-                        Move move;
-                        do {
-                                move = turn[turno].askPlay(player);
-                        }while(move==null);
-                        try {
-                            Thread.sleep(SLEEP);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if(turn[(turno+1)%2]==remoteTurn){
-                            remoteTurn.putPlay(move);
-                        }
-                        Log.v("turno", "IA: " + move);
-                        changeStatus(move,player);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                }else{
+                   movePC(turno,player);
                 }
                 runOnUiThread(new Runnable(){
                     @Override
                     public void run() {
-                        ArrayList<Integer> statusArray = logic.board.getArrayStatus();
-                        doBoard(statusArray);
-                        Box p1 = logic.board.getPlayer(Status.PLAYER1);
-                        Box p2 = logic.board.getPlayer(Status.PLAYER2);
-                        Coordinate cPlayer1 = p1.getCoordenate();
-                        //CONDICION DE CARRERA---------------------------------
-                        Coordinate cPlayer2 =  p2.getCoordenate(); ///FALLO
-                        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
-                            database.played++;
-                            if(cPlayer2.getX()==0){
-                                Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
-                                database.winners++;
-                                Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
-                            }
-                            restart();
-                            paintAgain();
-                            paintWinner();
-                        }
-                        paintTurn(turno);
+                       paintBoardThread(turno);
                     }
                 });
                 synchronized (this) {
@@ -405,7 +415,8 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }
-        }).start();
+        });
+        t.start();
     }
 
 
@@ -421,7 +432,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private synchronized void changeStatus(Move move,Status player){
+    private void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){
             Box boxNow = logic.board.getPlayer(player);
@@ -472,4 +483,39 @@ public class GameActivity extends AppCompatActivity {
         state.putInt("player2",player2);
         super.onSaveInstanceState(state);
     }
+
+
+    //MENU
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        android.view.MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.conf,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.map:
+                map();
+                return true;
+            case R.id.help:
+                ayuda();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void map() {
+           android.content.Intent map = new android.content.Intent(GameActivity.this,MapsActivity.class);
+           startActivity(map);
+    }
+
+    private void ayuda(){
+        android.content.Intent help = new android.content.Intent(GameActivity.this,HelpActivity.class);
+        //Bundle msg = new Bundle();
+        startActivity(help);
+    }
 }
+

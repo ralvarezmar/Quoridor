@@ -22,7 +22,7 @@ public class Database extends SQLiteOpenHelper {
             " Play INTEGER);";
 
 
-    public Database(final Context context) {
+    Database(final Context context) {
         super(context, NAME, null, VERSION);
     }
 
@@ -59,17 +59,20 @@ public class Database extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void getData(String nick){
+    public DataPlayer getData(String nick){
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery(" SELECT _id, Nick, Won, MAX(Play) FROM " + DATA + " WHERE Nick='"+nick+"'", null);
         if (c != null) {
             c.moveToFirst();
         }
-        DataPlayer subject = new DataPlayer(c.getInt(0), c.getString(1), c.getInt(2), c.getInt(3));
+        DataPlayer player = new DataPlayer(c.getInt(0), c.getString(1), c.getInt(2), c.getInt(3));
         winners = c.getInt(2);
+        System.out.print("Database ganadores actual: " + winners);
         played = c.getInt(3);
+        System.out.print("Database jugadas actual: " + played);
         db.close();
         c.close();
+        return player;
     }
 
     public void modifyValues(String nick, int won, int play){

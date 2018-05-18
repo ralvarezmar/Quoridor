@@ -24,7 +24,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationClient;
-
+    public double latitude;
+    public double longitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 if (location != null) {
                     LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    longitude=location.getLongitude();
+                    latitude=location.getLatitude();
                     Toast.makeText(MapsActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
                     MarkerOptions marker = new MarkerOptions().position(position).title("Your position");
                     marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));

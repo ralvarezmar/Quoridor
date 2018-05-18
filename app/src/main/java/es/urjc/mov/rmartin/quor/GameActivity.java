@@ -45,7 +45,7 @@ public class GameActivity extends AppCompatActivity {
     Player turn[];
     Player humanTurn[];
     Player remoteTurn;
-    String user;
+    public String user;
     int crear;
     volatile boolean finish = true;
     Database database;
@@ -81,11 +81,13 @@ public class GameActivity extends AppCompatActivity {
         logic = new Logic(FILAS,COLUMNAS);
         Thread.currentThread().interrupt();
         count=0;
-        Log.v("Turno", "Restart");
         setPlayer(player1,player2);
+        Log.v("Database", "ANTES DE INCREMENTAR Partidas jugadas: " + database.played);
         database.played++;
+        Log.v("Database", "DESPUES DE INCREMENTAR Partidas jugadas: " + database.played);
         TableLayout tl=(TableLayout)findViewById(R.id.tabla);
         tl.removeAllViews();
+        paintWinner();
     }
 
     private class Restart implements View.OnClickListener{
@@ -195,6 +197,9 @@ public class GameActivity extends AppCompatActivity {
             if(getResources().getConfiguration().orientation!=1) {
                 lr.bottomMargin = MINSIZE;
                 lr.topMargin = MINSIZE;
+            }else{
+                lr.leftMargin = -10;
+                lr.rightMargin = -10;
             }
             row.setLayoutParams(lr);
             tl.addView(row);
@@ -220,21 +225,22 @@ public class GameActivity extends AppCompatActivity {
     private void paintWinner(){
         TextView text = (TextView) findViewById(R.id.jugadas);
         String s= getResources().getString(R.string.jugadas);
+        Log.v("Database", "Partidas jugadas: " + database.played);
         s= s+database.played;
         text.setText(s);
         text = (TextView) findViewById(R.id.ganadas);
         s= getResources().getString(R.string.ganadas);
+        Log.v("Database", "Partidas ganadas: " + database.winners);
         s= s+database.winners;
         text.setText(s);
         database.modifyValues(user,database.winners,database.played);
         database.getData(user);
     }
 
-    private int setConfiguration(Bundle configuration){
+    private void setConfiguration(Bundle configuration){
         player1= configuration.getInt("player1");
         player2= configuration.getInt("player2");
         user= configuration.getString("user");
-        return configuration.getInt("crear");
     }
 
     private void setPlayer(int player1,int player2){
@@ -287,7 +293,7 @@ public class GameActivity extends AppCompatActivity {
         Bundle configuration = getIntent().getExtras();
         logic = new Logic(FILAS,COLUMNAS);
         if(configuration!=null){
-            int crear = setConfiguration(configuration);
+            setConfiguration(configuration);
         }
         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
         if(savedInstanceState!=null){
@@ -300,13 +306,19 @@ public class GameActivity extends AppCompatActivity {
         database = new Database(getApplicationContext());
 
         design(statusArray);
+        Log.v("Database", "Creo base de datos: "+ user);
         if(database.consultaBD(user)){
+            Log.v("Database", "get data");
             database.getData(user);
         }else{
+            Log.v("Database", "put Value");
             database.putValue(user);
         }
         paintWinner();
-        count=Message.turnoGlob;
+        if(remoteTurn!=null){
+            count=Message.turnoGlob;
+            paintTurn(count);
+        }
         runThread();
     }
 
@@ -360,7 +372,7 @@ public class GameActivity extends AppCompatActivity {
                     }
                 }
                 try {
-                    Thread.sleep(SLEEP);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -369,16 +381,21 @@ public class GameActivity extends AppCompatActivity {
                     public void run() {
                         ArrayList<Integer> statusArray = logic.board.getArrayStatus();
                         doBoard(statusArray);
-                        Box player1 = logic.board.getPlayer(Status.PLAYER1);
-                        Box player2 = logic.board.getPlayer(Status.PLAYER2);
-                        Coordinate cPlayer1 = player1.getCoordenate();
-                        Coordinate cPlayer2 =  player2.getCoordenate();
+                        Box p1 = logic.board.getPlayer(Status.PLAYER1);
+                        Box p2 = logic.board.getPlayer(Status.PLAYER2);
+                        Coordinate cPlayer1 = p1.getCoordenate();
+                        //CONDICION DE CARRERA---------------------------------
+                        Coordinate cPlayer2 =  p2.getCoordenate(); ///FALLO
                         if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+                            database.played++;
                             if(cPlayer2.getX()==0){
+                                Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
                                 database.winners++;
+                                Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
                             }
                             restart();
                             paintAgain();
+                            paintWinner();
                         }
                         paintTurn(turno);
                     }
@@ -404,7 +421,7 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void changeStatus(Move move,Status player){
+    private synchronized void changeStatus(Move move,Status player){
         Box boxFuture = logic.board.getPress(move.getC());
         if(move.getType()){
             Box boxNow = logic.board.getPlayer(player);

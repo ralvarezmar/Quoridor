@@ -323,11 +323,22 @@ public class GameActivity extends AppCompatActivity {
         paintWinner();
         if(remoteTurn!=null){
             count=Message.turnoGlob;
-            paintTurn(count);
+            paintTurnRemote(count);
         }
         runThread();
     }
 
+    private void paintTurnRemote(int turno){
+        ImageView bottom =(ImageView) findViewById(R.id.imageViewBottom);
+        ImageView top =(ImageView) findViewById(R.id.imageViewTop);
+        if(turno==1){
+            bottom.setVisibility(View.VISIBLE);
+            top.setVisibility(View.INVISIBLE);
+        }else{
+            bottom.setVisibility(View.INVISIBLE);
+            top.setVisibility(View.VISIBLE);
+        }
+    }
     private void movePC(int turno,Status player){
         try {
             Move move;
@@ -351,31 +362,36 @@ public class GameActivity extends AppCompatActivity {
         doBoard(statusArray);
         Box p1 = logic.board.getPlayer(Status.PLAYER1);
         Box p2 = logic.board.getPlayer(Status.PLAYER2);
-         Coordinate cPlayer1 = p1.getCoordenate();
-         Coordinate cPlayer2 =  p2.getCoordenate();
-         if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
-             finish=false;
-             if(cPlayer2.getX()==0){
-                Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
+        Coordinate cPlayer1 = p1.getCoordenate();
+        Coordinate cPlayer2 =  p2.getCoordenate();
+        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn!=null){
+            t.interrupt();
+            finish=false;
+            database.played++;
+            Remote player = (Remote) remoteTurn;
+            player.closeSocket();
+            if(cPlayer2.getX()==0){
                 database.winners++;
-                Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
-             }
-            restart();
-            paintAgain();
+            }
             paintWinner();
-            finish=true;
-            runThread();
+        }
+        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+         finish=false;
+         if(cPlayer2.getX()==0){
+            Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
+            database.winners++;
+            Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
+         }
+        restart();
+        paintAgain();
+        paintWinner();
+        finish=true;
+        runThread();
         }
         paintTurn(turno);
     }
 
-    private Status choosePlayer(int turno){
-        if(turno==1){
-            return Status.PLAYER2;
-        }else{
-            return Status.PLAYER1;
-        }
-    }
+
     private void runThread(){
         t = new Thread(new Runnable() {
         public void run(){
@@ -386,7 +402,11 @@ public class GameActivity extends AppCompatActivity {
                 }
                 Log.v("turno", "Numero: " + count + " Turno: " + turno);
                 Status player;
-                player=choosePlayer(turno);
+                if(turno==1){
+                    player= Status.PLAYER2;
+                }else{
+                    player= Status.PLAYER1;
+                }
                 if(humanTurn[turno]!=null){
                     try {
                         turn[turno].askPlay(player);

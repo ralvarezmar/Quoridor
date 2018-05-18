@@ -73,7 +73,17 @@ public class Remote extends Player{
        return changeToPlayer(move);
     }
 
+    public void closeSocket(){
+        try {
+            Thread.sleep(5000);
+            s.close();
+            in.close();
+            out.close();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
+    }
     @Override
     public void putPlay(Move move) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();

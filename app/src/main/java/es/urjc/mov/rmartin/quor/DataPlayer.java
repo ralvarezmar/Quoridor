@@ -3,8 +3,8 @@ package es.urjc.mov.rmartin.quor;
 class DataPlayer {
     private int id;
     private String nick;
-    private int ganadas;
-    private int jugadas;
+    public int ganadas;
+    public int jugadas;
     DataPlayer(int id, String nick, int ganadas, int jugadas) {
         this.id=id;
         this.nick=nick;

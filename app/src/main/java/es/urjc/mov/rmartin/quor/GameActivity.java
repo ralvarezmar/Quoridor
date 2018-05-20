@@ -220,6 +220,7 @@ public class GameActivity extends AppCompatActivity {
         level = Level.values()[intLevel];
         player1=savedInstanceState.getInt("player1");
         player2=savedInstanceState.getInt("player2");
+        count=savedInstanceState.getInt("turno");
         if(statusArray!=null){
             design(statusArray);
             paintWinner();
@@ -305,6 +306,7 @@ public class GameActivity extends AppCompatActivity {
         if(savedInstanceState!=null){
             recoverStatus(savedInstanceState);
             setPlayer(player1,player2);
+            runThread();
             return;
         }else{
             setPlayer(player1,player2);
@@ -375,18 +377,18 @@ public class GameActivity extends AppCompatActivity {
             }
             paintWinner();
         }
-        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
-         finish=false;
-         if(cPlayer2.getX()==0){
-            Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
-            database.winners++;
-            Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
-         }
-        restart();
-        paintAgain();
-        paintWinner();
-        finish=true;
-        runThread();
+        else if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+            finish=false;
+            if(cPlayer2.getX()==0){
+                Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
+                database.winners++;
+                Log.v("Database", "DESPUÉS DE INCREMENTAR Partidas ganadas: " + database.winners);
+            }
+            restart();
+            paintAgain();
+            paintWinner();
+            finish=true;
+            runThread();
         }
         paintTurn(turno);
     }
@@ -490,6 +492,9 @@ public class GameActivity extends AppCompatActivity {
     }
     @Override
     protected void onDestroy(){
+        t.interrupt();
+        Remote remote = (Remote) remoteTurn;
+        remote.closeSocket();
         finish=false;
         super.onDestroy();
     }
@@ -501,6 +506,7 @@ public class GameActivity extends AppCompatActivity {
         state.putInt("nivel",level.getNum());
         state.putInt("player1",player1);
         state.putInt("player2",player2);
+        state.putInt("turno",count);
         super.onSaveInstanceState(state);
     }
 

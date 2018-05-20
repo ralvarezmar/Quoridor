@@ -14,7 +14,7 @@ public class Database extends SQLiteOpenHelper {
     public int played;
     private static final int INICIAL=0;
 
-    public final String DATA = "Data";
+    private final String DATA = "Data";
     private final String CREATE_TABLASCORE = "CREATE TABLE " + DATA + " (" +
             " _id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             " Nick TEXT, " +
@@ -81,7 +81,7 @@ public class Database extends SQLiteOpenHelper {
         if (c != null) {
             c.moveToFirst();
         }
-       DataPlayer subject = new DataPlayer(c.getInt(0), c.getString(1), c.getInt(2), c.getInt(3));
+       DataPlayer player = new DataPlayer(c.getInt(0), c.getString(1), c.getInt(2), c.getInt(3));
         int id = c.getInt(0);
 
         db.close();

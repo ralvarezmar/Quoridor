@@ -314,12 +314,9 @@ public class GameActivity extends AppCompatActivity {
         database = new Database(getApplicationContext());
 
         design(statusArray);
-        Log.v("Database", "Creo base de datos: "+ user);
         if(database.consultaBD(user)){
-            Log.v("Database", "get data");
             database.getData(user);
         }else{
-            Log.v("Database", "put Value");
             database.putValue(user);
         }
         paintWinner();
@@ -350,7 +347,7 @@ public class GameActivity extends AppCompatActivity {
             Thread.sleep(SLEEP);
             if(turn[(turno+1)%2]==remoteTurn){
                 remoteTurn.putPlay(move);
-                Thread.sleep(SLEEP);
+                Thread.sleep(1000);
             }
             Log.v("turno", "IA: " + move);
             changeStatus(move,player);
@@ -493,9 +490,11 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         t.interrupt();
-        Remote remote = (Remote) remoteTurn;
-        remote.closeSocket();
         finish=false;
+        if(remoteTurn!=null){
+            Remote remote = (Remote) remoteTurn;
+            remote.closeSocket();
+        }
         super.onDestroy();
     }
 

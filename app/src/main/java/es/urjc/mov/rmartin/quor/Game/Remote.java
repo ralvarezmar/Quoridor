@@ -67,18 +67,21 @@ public class Remote extends Player{
     @Override
     public Move askPlay(Status statusPlayer) {
         Message answer = Message.ReadFrom(in);
-        Message.Play play = (Message.Play) answer;
-        Coordinate c= new Coordinate(play.getX(),play.getY());
-       Move move= new Move(c,play.getType());
-       return changeToPlayer(move);
+        if(answer.type()== Message.MessageTypes.PLAY){
+            Message.Play play = (Message.Play) answer;
+            Coordinate c= new Coordinate(play.getX(),play.getY());
+            Move move= new Move(c,play.getType());
+            return changeToPlayer(move);
+        }
+        return null;
     }
 
     public void closeSocket(){
         try {
             Thread.sleep(5000);
-            s.close();
             in.close();
             out.close();
+            s.close();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

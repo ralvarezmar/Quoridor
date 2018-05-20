@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.SocketException;
 
 public abstract class Message {
     public enum MessageTypes {
@@ -41,9 +42,11 @@ public abstract class Message {
                     break;
             }
             return message;
-        } catch (IOException e) {
+        } catch (SocketException e) {
             System.out.println("Error " + e);
             return null;
+        } catch (IOException e) {
+            throw new RuntimeException("Msg read: " + e);
         }
     }
 

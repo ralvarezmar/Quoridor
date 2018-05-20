@@ -61,7 +61,6 @@ public class Remote extends Player{
         int newY= (board.game[1].length-1)-y;
         Coordinate newC = new Coordinate(newX,newY);
         return new Move(newC,m.getType());
-
     }
 
     @Override

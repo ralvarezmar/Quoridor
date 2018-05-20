@@ -12,6 +12,8 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import es.urjc.mov.rmartin.quor.Game.Human;
 import es.urjc.mov.rmartin.quor.Game.IADijkstra;
@@ -390,7 +392,20 @@ public class GameActivity extends AppCompatActivity {
         paintTurn(turno);
     }
 
-
+    private void moveRemote(int turno,Status player){
+        try {
+            Move move = turn[turno].askPlay(player);
+            if(move!=null){
+                changeStatus(move,Status.PLAYER1);
+                Thread.sleep(SLEEP);
+            }else{
+                t.interrupt();
+                Thread.sleep(SLEEP);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     private void runThread(){
         t = new Thread(new Runnable() {
         public void run(){
@@ -413,15 +428,7 @@ public class GameActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }else if(turn[turno]==remoteTurn) {
-                     try {
-                         Move move = turn[turno].askPlay(player);
-                         if(move!=null){
-                             changeStatus(move,Status.PLAYER1);
-                             Thread.sleep(SLEEP);
-                         }///////PONER ALGO QUE IMPRIMA POR PANTALLA: PANTALLA ACABADA
-                     } catch (InterruptedException e) {
-                         e.printStackTrace();
-                     }
+                    moveRemote(turno,player);
                 }else{
                    movePC(turno,player);
                 }

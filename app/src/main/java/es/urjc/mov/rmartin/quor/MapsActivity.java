@@ -26,6 +26,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationClient;
     public double latitude;
     public double longitude;
+    public String user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        Bundle configuration = getIntent().getExtras();
+        if(configuration!=null){
+            user= configuration.getString("user");
+        }
     }
 
 
@@ -48,17 +53,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 if (location != null) {
                     LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
+                    LatLng position2 = new LatLng(location.getLatitude()+0.0001, location.getLongitude());
                     longitude=location.getLongitude();
                     latitude=location.getLatitude();
                     Toast.makeText(MapsActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
-                    MarkerOptions marker = new MarkerOptions().position(position).title("Your position");
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                    MarkerOptions marker = new MarkerOptions().position(position).title(user);
+                    MarkerOptions marker2 = new MarkerOptions().position(position2);
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                     mMap.addMarker(marker);
+                    mMap.addMarker(marker2);
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
                     mMap.setMinZoomPreference(12f);
                     mMap.setMaxZoomPreference(16f);
                     CircleOptions circleOptions = new CircleOptions();
-                    circleOptions.strokeColor(Color.BLUE);
+                    circleOptions.strokeColor(Color.WHITE);
                     circleOptions.center(position);
                     circleOptions.radius(4000);
                     mMap.addCircle(circleOptions);

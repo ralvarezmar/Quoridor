@@ -38,6 +38,7 @@ public abstract class Message {
                 case ERROR:
                     message = new ErrorMessage();
                     break;
+
                 default:
                     break;
             }

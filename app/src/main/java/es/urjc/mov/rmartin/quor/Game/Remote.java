@@ -67,7 +67,10 @@ public class Remote extends Player{
     @Override
     public Move askPlay(Status statusPlayer) {
         Message answer = Message.ReadFrom(in);
-        if(answer.type()== Message.MessageTypes.PLAY){
+        if(answer==null){
+            return null;
+        }
+        else if(answer.type()== Message.MessageTypes.PLAY){
             Message.Play play = (Message.Play) answer;
             Coordinate c= new Coordinate(play.getX(),play.getY());
             Move move= new Move(c,play.getType());

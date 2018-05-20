@@ -415,8 +415,10 @@ public class GameActivity extends AppCompatActivity {
                 }else if(turn[turno]==remoteTurn) {
                      try {
                          Move move = turn[turno].askPlay(player);
-                         changeStatus(move,Status.PLAYER1);
-                         Thread.sleep(SLEEP);
+                         if(move!=null){
+                             changeStatus(move,Status.PLAYER1);
+                             Thread.sleep(SLEEP);
+                         }///////PONER ALGO QUE IMPRIMA POR PANTALLA: PANTALLA ACABADA
                      } catch (InterruptedException e) {
                          e.printStackTrace();
                      }

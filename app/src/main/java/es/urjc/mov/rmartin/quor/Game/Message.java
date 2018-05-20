@@ -42,7 +42,8 @@ public abstract class Message {
             }
             return message;
         } catch (IOException e) {
-            throw new RuntimeException("Msg: read:" + e);
+            System.out.println("Error " + e);
+            return null;
         }
     }
 

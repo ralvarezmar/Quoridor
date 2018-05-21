@@ -34,7 +34,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=2000;
+    static final int SLEEP=1500;
     static final int MINSIZE=-15;
     Logic logic;
     Player playerTop;
@@ -374,6 +374,7 @@ public class GameActivity extends AppCompatActivity {
             if(cPlayer2.getX()==0){
                 database.winners++;
             }
+            //finishActivity(0);
             paintWinner();
         }
         else if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
@@ -410,6 +411,11 @@ public class GameActivity extends AppCompatActivity {
         t = new Thread(new Runnable() {
         public void run(){
             while (finish) {
+                try {
+                    Thread.sleep(SLEEP);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 final int turno;
                 synchronized (this) {
                     turno = count % turn.length;
@@ -421,6 +427,7 @@ public class GameActivity extends AppCompatActivity {
                 }else{
                     player= Status.PLAYER1;
                 }
+
                 if(humanTurn[turno]!=null){
                     try {
                         turn[turno].askPlay(player);

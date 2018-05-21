@@ -9,7 +9,7 @@ import java.net.SocketException;
 
 public abstract class Message {
     public enum MessageTypes {
-        LOGIN, PLAY, OK, OKLOGIN, ERROR
+        LOGIN, PLAY, OK, OKLOGIN, ERROR, POSITION
     }
     public static int turnoGlob=0;
 
@@ -38,7 +38,9 @@ public abstract class Message {
                 case ERROR:
                     message = new ErrorMessage();
                     break;
-
+                case POSITION:
+                    message = new PositionMessage(idata);
+                    break;
                 default:
                     break;
             }
@@ -222,6 +224,71 @@ public abstract class Message {
                 odata.flush();
             }catch (IOException e){
                 throw new RuntimeException(this + "write: " + e);
+            }
+        }
+    }
+
+    public static class PositionMessage extends Message{
+        private static final MessageTypes TMSG = MessageTypes.POSITION;
+        String nick;
+        double longitude;
+        double latitude;
+
+        public PositionMessage(String nick, double latitude, double longitude) throws IOException{
+            this.nick=nick;
+            this.latitude=latitude;
+            this.longitude=longitude;
+        }
+
+        PositionMessage(DataInputStream idata) throws IOException {
+            byte[] buffer=new byte[idata.readInt()];
+            idata.readFully(buffer);
+            this.nick=new String(buffer,"UTF-8");
+            this.latitude = idata.readDouble();
+            this.longitude = idata.readDouble();
+        }
+
+        @Override
+        public MessageTypes type() {
+            return TMSG;
+        }
+
+        public String getNick() {
+            return nick;
+        }
+
+        public void setNick(String nick) {
+            this.nick = nick;
+        }
+
+        public double getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(double longitude) {
+            this.longitude = longitude;
+        }
+
+        public double getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(double latitude) {
+            this.latitude = latitude;
+        }
+
+        @Override
+        public void writeTo(DataOutputStream odata) {
+            try {
+                odata.writeInt(MessageTypes.POSITION.ordinal());
+                byte buf[] = nick.getBytes();
+                odata.writeInt(buf.length);
+                odata.write(buf,0,buf.length);
+                odata.writeDouble(latitude);
+                odata.writeDouble(longitude);
+                odata.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

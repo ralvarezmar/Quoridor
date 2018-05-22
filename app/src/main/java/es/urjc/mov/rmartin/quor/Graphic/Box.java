@@ -1,6 +1,7 @@
 package es.urjc.mov.rmartin.quor.Graphic;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Box implements Serializable{
 
@@ -33,6 +34,22 @@ public class Box implements Serializable{
                 ", id=" + id +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Box box = (Box) o;
+        return id == box.id &&
+                Objects.equals(c, box.c) &&
+                status == box.status;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(c, id, status);
     }
 
     public void setStatus(Status status) {

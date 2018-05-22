@@ -28,7 +28,6 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-       // Log.v(Database.class.getName(), "Creating DB.");
         db.execSQL(CREATE_TABLASCORE);
     }
 

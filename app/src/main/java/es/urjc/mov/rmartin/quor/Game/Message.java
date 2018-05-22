@@ -94,8 +94,7 @@ public abstract class Message {
         int turno;
 
         OkLogin(DataInputStream idata) throws IOException{
-            this.turno=idata.readInt();
-            turnoGlob=turno;
+            turnoGlob=idata.readInt();
         }
 
         OkLogin(int turno){

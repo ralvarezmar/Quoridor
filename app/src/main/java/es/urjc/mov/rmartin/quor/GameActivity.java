@@ -34,7 +34,7 @@ public class GameActivity extends AppCompatActivity {
     static final int FILAS = 7;
     static final int COLUMNAS = 7;
     static final double SIZE=1.5;
-    static final int SLEEP=1500;
+    static final int SLEEP=2000;
     static final int MINSIZE=-15;
     Logic logic;
     Player playerTop;
@@ -112,31 +112,30 @@ public class GameActivity extends AppCompatActivity {
         }
         public void onClick(View button){
             int turno=count%2;
-            if(humanTurn[turno]==null){
+            if(humanTurn[turno]==null || !finish){
                 System.out.print("NO ES TU TURNO");
-                return;
-            }
-            Switch eleccion;
-            Status player;
-            if(turno==1){
-                eleccion = (Switch) findViewById(R.id.eleccionbottom);
-                player=Status.PLAYER2;
-            }else {
-                eleccion = (Switch) findViewById(R.id.eleccionTop);
-                player=Status.PLAYER1;
-            }
-            Coordinate c=new Coordinate(x,y);
-            Boolean check = eleccion.isChecked();
-            Move move=new Move(c,check);
-            if(humanTurn[turno].validMove(move,player)){
-                humanTurn[turno].putPlay(move);
-                changeStatus(move,player);
-                if(remoteTurn!=null){
-                    remoteTurn.putPlay(move);
-                    System.out.println("Despues de PUTPLAY");
+            }else{
+                Switch eleccion;
+                Status player;
+                if(turno==1){
+                    eleccion = (Switch) findViewById(R.id.eleccionbottom);
+                    player=Status.PLAYER2;
+                }else {
+                    eleccion = (Switch) findViewById(R.id.eleccionTop);
+                    player=Status.PLAYER1;
+                }
+                Coordinate c=new Coordinate(x,y);
+                Boolean check = eleccion.isChecked();
+                Move move=new Move(c,check);
+                if(humanTurn[turno].validMove(move,player)){
+                    humanTurn[turno].putPlay(move);
+                    changeStatus(move,player);
+                    if(remoteTurn!=null){
+                        remoteTurn.putPlay(move);
+                        System.out.println("Despues de PUTPLAY");
+                    }
                 }
             }
-
         }
     }
 
@@ -308,7 +307,6 @@ public class GameActivity extends AppCompatActivity {
         if(savedInstanceState!=null){
             recoverStatus(savedInstanceState);
             setPlayer(player1,player2);
-            runThread();
             return;
         }else{
             setPlayer(player1,player2);
@@ -316,15 +314,23 @@ public class GameActivity extends AppCompatActivity {
         database = new Database(getApplicationContext());
 
         design(statusArray);
+        Log.v("Database", "Creo base de datos: "+ user);
         if(database.consultaBD(user)){
+            Log.v("Database", "get data");
             database.getData(user);
         }else{
+            Log.v("Database", "put Value");
             database.putValue(user);
         }
         paintWinner();
+        try {
+            Thread.sleep(SLEEP);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if(remoteTurn!=null){
+            paintTurnRemote(Message.turnoGlob);
             count=Message.turnoGlob;
-            paintTurnRemote(count);
         }
         runThread();
     }
@@ -340,6 +346,7 @@ public class GameActivity extends AppCompatActivity {
             top.setVisibility(View.VISIBLE);
         }
     }
+
     private void movePC(int turno,Status player){
         try {
             Move move;
@@ -349,7 +356,7 @@ public class GameActivity extends AppCompatActivity {
             Thread.sleep(SLEEP);
             if(turn[(turno+1)%2]==remoteTurn){
                 remoteTurn.putPlay(move);
-                Thread.sleep(1000);
+                Thread.sleep(SLEEP);
             }
             Log.v("turno", "IA: " + move);
             changeStatus(move,player);
@@ -365,19 +372,7 @@ public class GameActivity extends AppCompatActivity {
         Box p2 = logic.board.getPlayer(Status.PLAYER2);
         Coordinate cPlayer1 = p1.getCoordenate();
         Coordinate cPlayer2 =  p2.getCoordenate();
-        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn!=null){
-            t.interrupt();
-            finish=false;
-            database.played++;
-            Remote player = (Remote) remoteTurn;
-            player.closeSocket();
-            if(cPlayer2.getX()==0){
-                database.winners++;
-            }
-            //finishActivity(0);
-            paintWinner();
-        }
-        else if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
+        if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn==null){
             finish=false;
             if(cPlayer2.getX()==0){
                 Log.v("Database", "ANTES DE INCREMENTAR Partidas ganadas: " + database.winners);
@@ -389,67 +384,68 @@ public class GameActivity extends AppCompatActivity {
             paintWinner();
             finish=true;
             runThread();
+        }else if((cPlayer1.getX()==FILAS-1 || cPlayer2.getX()==0) && remoteTurn!=null){
+            t.interrupt();
+            finish=false;
+            database.played++;
+            Remote player = (Remote) remoteTurn;
+            player.closeSocket();
+            if(cPlayer2.getX()==0){
+                database.winners++;
+            }
+            //finishActivity(0);
+            paintWinner();
         }
         paintTurn(turno);
     }
 
-    private void moveRemote(int turno,Status player){
-        try {
-            Move move = turn[turno].askPlay(player);
-            if(move!=null){
-                changeStatus(move,Status.PLAYER1);
-                Thread.sleep(SLEEP);
-            }else{
-                t.interrupt();
-                Thread.sleep(SLEEP);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
     private void runThread(){
         t = new Thread(new Runnable() {
-        public void run(){
-            while (finish) {
-                try {
-                    Thread.sleep(SLEEP);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                final int turno;
-                synchronized (this) {
-                    turno = count % turn.length;
-                }
-                Log.v("turno", "Numero: " + count + " Turno: " + turno);
-                Status player;
-                if(turno==1){
-                    player= Status.PLAYER2;
-                }else{
-                    player= Status.PLAYER1;
-                }
-
-                if(humanTurn[turno]!=null){
-                    try {
-                        turn[turno].askPlay(player);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            public void run(){
+                while (finish) {
+                    final int turno;
+                    synchronized (this) {
+                        turno = count % turn.length;
                     }
-                }else if(turn[turno]==remoteTurn) {
-                    moveRemote(turno,player);
-                }else{
-                   movePC(turno,player);
-                }
-                runOnUiThread(new Runnable(){
-                    @Override
-                    public void run() {
-                       paintBoardThread(turno);
+                    Log.v("turno", "Numero: " + count + " Turno: " + turno);
+                    Status player;
+                    if(turno==1){
+                        player= Status.PLAYER2;
+                    }else{
+                        player= Status.PLAYER1;
                     }
-                });
-                synchronized (this) {
-                    count++;
+                    if(humanTurn[turno]!=null){
+                        try {
+                            turn[turno].askPlay(player);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else if(turn[turno]==remoteTurn) {
+                        try {
+                            Move move = turn[turno].askPlay(player);
+                            if(move!=null){
+                                changeStatus(move,Status.PLAYER1);
+                            }else{
+                                t.interrupt();
+                            }
+                            Thread.sleep(SLEEP);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        movePC(turno,player);
+                    }
+                    runOnUiThread(new Runnable(){
+                        @Override
+                        public void run() {
+                            paintBoardThread(turno);
+                        }
+                    });
+                    synchronized (this) {
+                        count++;
+                    }
                 }
             }
-        }
         });
         t.start();
     }
@@ -484,8 +480,8 @@ public class GameActivity extends AppCompatActivity {
         int c=0;
         for(int i = 0; i < logic.board.game.length; i++) {
             for(int j= 0;j < logic.board.game[i].length;j++) {
-               System.out.print(statusArray.get(c));
-               System.out.print(" ");
+                System.out.print(statusArray.get(c));
+                System.out.print(" ");
             }
             System.out.println(" ");
         }
@@ -505,12 +501,7 @@ public class GameActivity extends AppCompatActivity {
     }
     @Override
     protected void onDestroy(){
-        t.interrupt();
         finish=false;
-        if(remoteTurn!=null){
-            Remote remote = (Remote) remoteTurn;
-            remote.closeSocket();
-        }
         super.onDestroy();
     }
 
@@ -521,7 +512,6 @@ public class GameActivity extends AppCompatActivity {
         state.putInt("nivel",level.getNum());
         state.putInt("player1",player1);
         state.putInt("player2",player2);
-        state.putInt("turno",count);
         super.onSaveInstanceState(state);
     }
 
@@ -549,8 +539,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void map() {
-           android.content.Intent map = new android.content.Intent(GameActivity.this,MapsActivity.class);
-           startActivity(map);
+        android.content.Intent map = new android.content.Intent(GameActivity.this,MapsActivity.class);
+        startActivity(map);
     }
 
     private void ayuda(){

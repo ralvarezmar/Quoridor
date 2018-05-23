@@ -82,7 +82,12 @@
                     android:textStyle="bold"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/Movimiento" />
-
+                <ImageView
+                    android:id="@+id/imageViewTop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/person" />
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/bottomBoard"
@@ -122,6 +127,13 @@
                     android:textStyle="bold"
                     android:textColor="@color/colorPrimaryDark"
                     android:text="@string/Movimiento" />
+                <ImageView
+                    android:id="@+id/imageViewBottom"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/person" />
             </LinearLayout>
         </LinearLayout>
 

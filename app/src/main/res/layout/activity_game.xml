@@ -85,12 +85,13 @@
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="@string/Movimiento" />
+
             <ImageView
                 android:id="@+id/imageViewTop"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@android:drawable/ic_input_add"
-                android:layout_width="wrap_content" />
+                app:srcCompat="@drawable/person" />
         </LinearLayout>
 
         <TableLayout
@@ -145,7 +146,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:visibility="invisible"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/person" />
     </LinearLayout>
 
 </android.widget.LinearLayout>

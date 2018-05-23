@@ -17,8 +17,8 @@ import es.urjc.mov.rmartin.quor.Graphic.Status;
 public class Remote extends Player{
     private String nick;
     private Socket s;
-    //private final String IP="10.3.49.35";
-    private final String IP="192.168.1.7";
+    private final String IP="10.1.128.237";
+    //private final String IP="192.168.1.7";
     //private final String IP="10.0.2.2";
     private final int PORT=2020;
     public DataInputStream in;
